@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { createBrowserRouter, RouterProvider } from 'react-router'
+import PainScale from './pages/PainScale.tsx'
 
 const router = createBrowserRouter([
   {
@@ -11,7 +12,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/pain-scale',
-    Component: App
+    Component: PainScale
   },
     {
     path: '/sleep-scale',
