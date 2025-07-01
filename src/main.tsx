@@ -1,30 +1,31 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
-import { createBrowserRouter, RouterProvider } from 'react-router'
-import PainScale from './pages/PainScale.tsx'
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import {createBrowserRouter, RouterProvider} from 'react-router';
+import App from './App.tsx';
+import './index.css';
+import PainScale from './pages/PainScale.tsx';
+import SleepScale from './pages/SleepScale.tsx';
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     Component: App,
   },
   {
     path: '/pain-scale',
-    Component: PainScale
+    Component: PainScale,
   },
-    {
+  {
     path: '/sleep-scale',
-    Component: App
+    Component: SleepScale,
   },
-    {
+  {
     path: '/stress-scale',
-    Component: App
+    Component: App,
   },
-    {
+  {
     path: '/daily-habit-builder',
-    Component: App
+    Component: App,
   },
 ]);
 
@@ -32,4 +33,4 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RouterProvider router={router} />
   </StrictMode>,
-)
+);

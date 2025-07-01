@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import {z} from 'zod';
 
 // Define reusable enums first
 export const PainLocationEnum = z.enum([
@@ -44,25 +44,35 @@ export const MoodEnum = z.enum([
 
 // Schema using enums
 export const painScaleSchema = z.object({
-  painLocations: z.array(PainLocationEnum).min(1, 'Select at least one area of pain'),
+  painLocations: z
+    .array(PainLocationEnum)
+    .min(1, 'Select at least one area of pain'),
   painIntensity: z.number().int().min(0).max(10),
   painTypes: z.array(PainTypeEnum).min(1, 'Select at least one pain type'),
 
-  painWorsenedBy: z.object({
-    reasons: z.array(WorsenEnum),
-    otherReason: z.string().optional().or(z.literal('')),
-  }).refine(
-    (data) => !data.reasons.includes('other') || (data.otherReason && data.otherReason.trim() !== ''),
-    { message: 'Please specify the other reason', path: ['otherReason'] }
-  ),
+  painWorsenedBy: z
+    .object({
+      reasons: z.array(WorsenEnum),
+      otherReason: z.string().optional().or(z.literal('')),
+    })
+    .refine(
+      data =>
+        !data.reasons.includes('other') ||
+        (data.otherReason && data.otherReason.trim() !== ''),
+      {message: 'Please specify the other reason', path: ['otherReason']},
+    ),
 
-  painRelievedBy: z.object({
-    methods: z.array(RelieveEnum),
-    otherMethod: z.string().optional().or(z.literal('')),
-  }).refine(
-    (data) => !data.methods.includes('other') || (data.otherMethod && data.otherMethod.trim() !== ''),
-    { message: 'Please specify the other method', path: ['otherMethod'] }
-  ),
+  painRelievedBy: z
+    .object({
+      methods: z.array(RelieveEnum),
+      otherMethod: z.string().optional().or(z.literal('')),
+    })
+    .refine(
+      data =>
+        !data.methods.includes('other') ||
+        (data.otherMethod && data.otherMethod.trim() !== ''),
+      {message: 'Please specify the other method', path: ['otherMethod']},
+    ),
 
   emotionalState: z.object({
     mood: MoodEnum,

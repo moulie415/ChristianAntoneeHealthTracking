@@ -2,11 +2,7 @@
   "hosting": {
     "public": "dist",
     "site": "ca-health-tracking",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "**",

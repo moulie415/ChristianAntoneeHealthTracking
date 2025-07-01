@@ -1,6 +1,4 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {
   Form,
   FormField,
@@ -8,63 +6,71 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { MoodEnum, PainLocationEnum, painScaleSchema, PainTypeEnum, RelieveEnum, WorsenEnum } from '../schemas/painScale';
-import { Checkbox } from '../components/ui/checkbox';
-import { Button } from '../components/ui/button';
-import { Textarea } from '../components/ui/textarea';
-import { Input } from '../components/ui/input';
-import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
-import { Slider } from '../components/ui/slider';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
-import { Label } from '../components/ui/label';
+import {zodResolver} from '@hookform/resolvers/zod';
+import {useForm} from 'react-hook-form';
+import {z} from 'zod';
+import {Button} from '../components/ui/button';
+import {Checkbox} from '../components/ui/checkbox';
+import {Input} from '../components/ui/input';
+import {Label} from '../components/ui/label';
+import {RadioGroup, RadioGroupItem} from '../components/ui/radio-group';
+import {Slider} from '../components/ui/slider';
+import {Textarea} from '../components/ui/textarea';
+import {
+  MoodEnum,
+  PainLocationEnum,
+  painScaleSchema,
+  PainTypeEnum,
+  RelieveEnum,
+  WorsenEnum,
+} from '../schemas/painScale';
 
-type Option<T extends string> = { label: string; value: T };
+type Option<T extends string> = {label: string; value: T};
 
 const painLocationOptions: Option<z.infer<typeof PainLocationEnum>>[] = [
-  { label: 'Lower back (centered)', value: 'lower_back_centered' },
-  { label: 'One side of lower back', value: 'lower_back_one_side' },
-  { label: 'Glute/buttock area', value: 'glute_area' },
-  { label: 'Hamstring/back of thigh', value: 'hamstring' },
-  { label: 'Calf or foot', value: 'calf_or_foot' },
-  { label: 'Numbness / tingling', value: 'numbness_or_tingling' },
+  {label: 'Lower back (centered)', value: 'lower_back_centered'},
+  {label: 'One side of lower back', value: 'lower_back_one_side'},
+  {label: 'Glute/buttock area', value: 'glute_area'},
+  {label: 'Hamstring/back of thigh', value: 'hamstring'},
+  {label: 'Calf or foot', value: 'calf_or_foot'},
+  {label: 'Numbness / tingling', value: 'numbness_or_tingling'},
 ];
 
 const painTypeOptions: Option<z.infer<typeof PainTypeEnum>>[] = [
-  { label: 'Sharp or stabbing', value: 'sharp_stabbing' },
-  { label: 'Dull or aching', value: 'dull_aching' },
-  { label: 'Burning', value: 'burning' },
-  { label: 'Tingling or numbness', value: 'tingling_or_numbness' },
-  { label: 'Radiating down leg', value: 'radiating_down_leg' },
+  {label: 'Sharp or stabbing', value: 'sharp_stabbing'},
+  {label: 'Dull or aching', value: 'dull_aching'},
+  {label: 'Burning', value: 'burning'},
+  {label: 'Tingling or numbness', value: 'tingling_or_numbness'},
+  {label: 'Radiating down leg', value: 'radiating_down_leg'},
 ];
 
 const worsenOptions: Option<z.infer<typeof WorsenEnum>>[] = [
-  { label: 'Sitting too long', value: 'sitting_too_long' },
-  { label: 'Poor sleep', value: 'poor_sleep' },
-  { label: 'Lifting/bending', value: 'lifting_bending' },
-  { label: 'Stress/anxiety', value: 'stress_anxiety' },
-  { label: 'Movement or exercise', value: 'movement_or_exercise' },
-  { label: 'Nothing specific / unknown', value: 'nothing_specific' },
-  { label: 'Other', value: 'other' },
+  {label: 'Sitting too long', value: 'sitting_too_long'},
+  {label: 'Poor sleep', value: 'poor_sleep'},
+  {label: 'Lifting/bending', value: 'lifting_bending'},
+  {label: 'Stress/anxiety', value: 'stress_anxiety'},
+  {label: 'Movement or exercise', value: 'movement_or_exercise'},
+  {label: 'Nothing specific / unknown', value: 'nothing_specific'},
+  {label: 'Other', value: 'other'},
 ];
 
 const relieveOptions: Option<z.infer<typeof RelieveEnum>>[] = [
-  { label: 'Gentle movement', value: 'gentle_movement' },
-  { label: 'Walking', value: 'walking' },
-  { label: 'Stretching', value: 'stretching' },
-  { label: 'Breathing / relaxing', value: 'breathing_relaxing' },
-  { label: 'Heat / cold therapy', value: 'heat_cold_therapy' },
-  { label: 'Medication', value: 'medication' },
-  { label: 'Other', value: 'other' },
+  {label: 'Gentle movement', value: 'gentle_movement'},
+  {label: 'Walking', value: 'walking'},
+  {label: 'Stretching', value: 'stretching'},
+  {label: 'Breathing / relaxing', value: 'breathing_relaxing'},
+  {label: 'Heat / cold therapy', value: 'heat_cold_therapy'},
+  {label: 'Medication', value: 'medication'},
+  {label: 'Other', value: 'other'},
 ];
 
 const moodOptions: Option<z.infer<typeof MoodEnum>>[] = [
-  { label: '😄 Hopeful', value: 'hopeful' },
-  { label: '🙂 Accepting', value: 'accepting' },
-  { label: '😐 Frustrated', value: 'frustrated' },
-  { label: '😟 Anxious', value: 'anxious' },
-  { label: '😢 Helpless', value: 'helpless' },
+  {label: '😄 Hopeful', value: 'hopeful'},
+  {label: '🙂 Accepting', value: 'accepting'},
+  {label: '😐 Frustrated', value: 'frustrated'},
+  {label: '😟 Anxious', value: 'anxious'},
+  {label: '😢 Helpless', value: 'helpless'},
 ];
-
 
 function PainScale() {
   const form = useForm<z.infer<typeof painScaleSchema>>({
@@ -73,16 +79,18 @@ function PainScale() {
       painLocations: [],
       painIntensity: 0,
       painTypes: [],
-      painWorsenedBy: { reasons: [], otherReason: '' },
-      painRelievedBy: { methods: [], otherMethod: '' },
-      emotionalState: { mood: 'hopeful', note: '' },
+      painWorsenedBy: {reasons: [], otherReason: ''},
+      painRelievedBy: {methods: [], otherMethod: ''},
+      emotionalState: {mood: 'hopeful', note: ''},
       smallWin: '',
     },
   });
 
-  const { watch, handleSubmit, control } = form;
+  const {watch, handleSubmit, control} = form;
   const painWorsenedBy = watch('painWorsenedBy');
   const painRelievedBy = watch('painRelievedBy');
+
+  const painIntensity = watch('painIntensity');
 
   function onSubmit(values: z.infer<typeof painScaleSchema>) {
     console.log(values);
@@ -90,7 +98,9 @@ function PainScale() {
 
   return (
     <Form {...form}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 p-4 sm:p-6 max-w-xl mx-auto">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6 max-w-xl mx-auto">
         {/** Question 1 */}
         <Card>
           <CardHeader>
@@ -100,17 +110,19 @@ function PainScale() {
             <FormField
               control={control}
               name="painLocations"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="flex flex-col space-y-2">
-                    {painLocationOptions.map((opt) => (
-                      <label key={opt.value} className="flex items-center space-x-2">
+                    {painLocationOptions.map(opt => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center space-x-2">
                         <Checkbox
                           checked={field.value?.includes(opt.value)}
-                          onCheckedChange={(checked) => {
+                          onCheckedChange={checked => {
                             const newVal = checked
                               ? [...field.value, opt.value]
-                              : field.value.filter((v) => v !== opt.value);
+                              : field.value.filter(v => v !== opt.value);
                             field.onChange(newVal);
                           }}
                         />
@@ -128,20 +140,20 @@ function PainScale() {
         {/** Question 2 */}
         <Card>
           <CardHeader>
-            <FormLabel>2. How intense is the pain right now?</FormLabel>
+            <FormLabel>{`2. How intense is the pain right now? ${painIntensity}/10`}</FormLabel>
           </CardHeader>
           <CardContent>
             <FormField
               control={control}
               name="painIntensity"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <Slider
                     min={0}
                     max={10}
                     step={1}
                     value={[field.value]}
-                    onValueChange={(val) => field.onChange(val[0])}
+                    onValueChange={val => field.onChange(val[0])}
                   />
                   <FormMessage />
                 </FormItem>
@@ -159,17 +171,19 @@ function PainScale() {
             <FormField
               control={control}
               name="painTypes"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="flex flex-col space-y-2">
-                    {painTypeOptions.map((opt) => (
-                      <label key={opt.value} className="flex items-center space-x-2">
+                    {painTypeOptions.map(opt => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center space-x-2">
                         <Checkbox
                           checked={field.value?.includes(opt.value)}
-                          onCheckedChange={(checked) => {
+                          onCheckedChange={checked => {
                             const newVal = checked
                               ? [...field.value, opt.value]
-                              : field.value.filter((v) => v !== opt.value);
+                              : field.value.filter(v => v !== opt.value);
                             field.onChange(newVal);
                           }}
                         />
@@ -193,17 +207,19 @@ function PainScale() {
             <FormField
               control={control}
               name="painWorsenedBy.reasons"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="flex flex-col space-y-2">
-                    {worsenOptions.map((opt) => (
-                      <label key={opt.value} className="flex items-center space-x-2">
+                    {worsenOptions.map(opt => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center space-x-2">
                         <Checkbox
                           checked={field.value?.includes(opt.value)}
-                          onCheckedChange={(checked) => {
+                          onCheckedChange={checked => {
                             const newVal = checked
                               ? [...field.value, opt.value]
-                              : field.value.filter((v) => v !== opt.value);
+                              : field.value.filter(v => v !== opt.value);
                             field.onChange(newVal);
                           }}
                         />
@@ -215,7 +231,7 @@ function PainScale() {
                     <FormField
                       control={control}
                       name="painWorsenedBy.otherReason"
-                      render={({ field }) => (
+                      render={({field}) => (
                         <FormItem className="mt-2">
                           <Input placeholder="Please specify..." {...field} />
                           <FormMessage />
@@ -239,17 +255,19 @@ function PainScale() {
             <FormField
               control={control}
               name="painRelievedBy.methods"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <div className="flex flex-col space-y-2">
-                    {relieveOptions.map((opt) => (
-                      <label key={opt.value} className="flex items-center space-x-2">
+                    {relieveOptions.map(opt => (
+                      <label
+                        key={opt.value}
+                        className="flex items-center space-x-2">
                         <Checkbox
                           checked={field.value?.includes(opt.value)}
-                          onCheckedChange={(checked) => {
+                          onCheckedChange={checked => {
                             const newVal = checked
                               ? [...field.value, opt.value]
-                              : field.value.filter((v) => v !== opt.value);
+                              : field.value.filter(v => v !== opt.value);
                             field.onChange(newVal);
                           }}
                         />
@@ -261,7 +279,7 @@ function PainScale() {
                     <FormField
                       control={control}
                       name="painRelievedBy.otherMethod"
-                      render={({ field }) => (
+                      render={({field}) => (
                         <FormItem className="mt-2">
                           <Input placeholder="Please specify..." {...field} />
                           <FormMessage />
@@ -279,22 +297,27 @@ function PainScale() {
         {/** Question 6 */}
         <Card>
           <CardHeader>
-            <FormLabel>6. How do you feel emotionally about your pain today?</FormLabel>
+            <FormLabel>
+              6. How do you feel emotionally about your pain today?
+            </FormLabel>
           </CardHeader>
           <CardContent>
             <FormField
               control={control}
               name="emotionalState.mood"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <RadioGroup
                     onValueChange={field.onChange}
                     value={field.value}
-                    className="flex flex-col space-y-1"
-                  >
-                    {moodOptions.map((opt) => (
+                    className="flex flex-col space-y-1">
+                    {moodOptions.map(opt => (
                       <div key={opt.value} className="flex items-center gap-3">
-                        <RadioGroupItem key={opt.value} value={opt.value} id={opt.value} />
+                        <RadioGroupItem
+                          key={opt.value}
+                          value={opt.value}
+                          id={opt.value}
+                        />
                         <Label htmlFor={opt.value}>{opt.label}</Label>
                       </div>
                     ))}
@@ -315,7 +338,7 @@ function PainScale() {
             <FormField
               control={control}
               name="emotionalState.note"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <Textarea placeholder="Add a note..." {...field} />
                   <FormMessage />
@@ -334,7 +357,7 @@ function PainScale() {
             <FormField
               control={control}
               name="smallWin"
-              render={({ field }) => (
+              render={({field}) => (
                 <FormItem>
                   <Input placeholder="I was able to..." {...field} />
                   <FormMessage />
