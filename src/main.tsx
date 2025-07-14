@@ -3,8 +3,10 @@ import {createRoot} from 'react-dom/client';
 import {createBrowserRouter, RouterProvider} from 'react-router';
 import App from './App.tsx';
 import './index.css';
+import {DailyHabitBuilder} from './pages/DailyHabitBuilder.tsx';
 import PainScale from './pages/PainScale.tsx';
 import SleepScale from './pages/SleepScale.tsx';
+import StressScale from './pages/StressScale.tsx';
 
 const router = createBrowserRouter([
   {
@@ -21,11 +23,11 @@ const router = createBrowserRouter([
   },
   {
     path: '/stress-scale',
-    Component: App,
+    Component: StressScale,
   },
   {
     path: '/daily-habit-builder',
-    Component: App,
+    Component: DailyHabitBuilder,
   },
 ]);
 

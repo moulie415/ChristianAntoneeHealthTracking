@@ -55,7 +55,7 @@ function SleepScale() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(values => console.log(values))}
-        className="space-y-6 max-w-xl mx-auto">
+        className="space-y-6 max-w-xl m-5">
         {/* Question 1 */}
         <Card>
           <CardHeader>
@@ -450,10 +450,11 @@ function SleepScale() {
             />
           </CardContent>
         </Card>
-
-        <Button type="submit" className="mt-6">
-          Submit
-        </Button>
+        <div className="pt-4 flex justify-center">
+          <Button type="submit" className="w-full sm:w-auto">
+            Submit
+          </Button>
+        </div>
       </form>
     </Form>
   );

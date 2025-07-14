@@ -100,7 +100,7 @@ function PainScale() {
     <Form {...form}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="space-y-6 max-w-xl mx-auto">
+        className="space-y-6 max-w-xl m-5">
         {/** Question 1 */}
         <Card>
           <CardHeader>
@@ -367,7 +367,7 @@ function PainScale() {
           </CardContent>
         </Card>
 
-        <div className="pt-4">
+        <div className="pt-4 flex justify-center">
           <Button type="submit" className="w-full sm:w-auto">
             Submit
           </Button>
