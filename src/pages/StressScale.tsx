@@ -75,7 +75,7 @@ function StressScale() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 max-w-xl m-5">
+        className="space-y-6 max-w-xl m-5 sm:mx-auto">
         {/* 1. Stress Level */}
         <Card>
           <CardHeader>
