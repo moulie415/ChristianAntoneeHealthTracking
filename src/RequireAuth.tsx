@@ -29,8 +29,6 @@ export function RequireAuth({children}: RequireAuthProps) {
     );
   }
 
-  console.log(user);
-
   if (!user) {
     // Save the current location so we can redirect back after login
     return <Navigate to="/login" state={{from: location}} replace />;

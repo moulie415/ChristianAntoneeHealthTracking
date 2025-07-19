@@ -6,6 +6,7 @@ import {createBrowserRouter, RouterProvider} from 'react-router';
 import {Toaster} from 'sonner';
 import {firebaseConfig} from './FIREBASE_CONFIG';
 import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
+import Home from './pages/Home';
 import Login from './pages/Login';
 import PainScale from './pages/PainScale';
 import SleepScale from './pages/SleepScale';
@@ -15,7 +16,7 @@ import {RequireAuth} from './RequireAuth';
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: null,
+    Component: Home,
   },
   {
     path: 'login',
