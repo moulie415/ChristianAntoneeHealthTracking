@@ -9,6 +9,7 @@ import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PainScale from './pages/PainScale';
+import RedirectIfAuthenticated from './pages/RedirectIfAuthenticated';
 import SleepScale from './pages/SleepScale';
 import StressScale from './pages/StressScale';
 import {RequireAuth} from './RequireAuth';
@@ -20,7 +21,11 @@ const router = createBrowserRouter([
   },
   {
     path: 'login',
-    Component: Login,
+    element: (
+      <RedirectIfAuthenticated>
+        <Login />
+      </RedirectIfAuthenticated>
+    ),
   },
   {
     path: '/pain-scale',
