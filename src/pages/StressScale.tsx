@@ -50,10 +50,10 @@ const stressHelperOptions = [
   'Nothing helped today',
 ];
 
-type FormValues = z.infer<typeof stressSchema>;
+export type StressFormValues = z.infer<typeof stressSchema>;
 
 function StressScale() {
-  const form = useForm<FormValues>({
+  const form = useForm<StressFormValues>({
     resolver: zodResolver(stressSchema),
     defaultValues: {
       stressLevel: undefined,
@@ -67,7 +67,7 @@ function StressScale() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = (data: StressFormValues) => {
     console.log('Submitted Data:', data);
   };
 

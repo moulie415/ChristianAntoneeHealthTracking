@@ -1,19 +1,20 @@
 import {initializeApp} from 'firebase/app';
 import {initializeAppCheck, ReCaptchaV3Provider} from 'firebase/app-check';
 import {getAuth} from 'firebase/auth';
+import {getFunctions} from 'firebase/functions';
 import {useEffect} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router';
 import {Toaster} from 'sonner';
+import Layout from './components/Layout';
+import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
+import {RequireAuth} from './components/RequireAuth';
 import {firebaseConfig} from './FIREBASE_CONFIG';
-import Layout from './Layout';
 import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PainScale from './pages/PainScale';
-import RedirectIfAuthenticated from './pages/RedirectIfAuthenticated';
 import SleepScale from './pages/SleepScale';
 import StressScale from './pages/StressScale';
-import {RequireAuth} from './RequireAuth';
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,7 @@ const router = createBrowserRouter([
 
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const functions = getFunctions(app);
 
 function App() {
   useEffect(() => {

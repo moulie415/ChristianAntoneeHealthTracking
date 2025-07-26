@@ -72,16 +72,17 @@ const moodOptions: Option<z.infer<typeof MoodEnum>>[] = [
   {label: '😢 Helpless', value: 'helpless'},
 ];
 
+export type PainScaleValues = z.infer<typeof painScaleSchema>;
+
 function PainScale() {
-  const form = useForm<z.infer<typeof painScaleSchema>>({
+  const form = useForm<PainScaleValues>({
     resolver: zodResolver(painScaleSchema),
     defaultValues: {
       painLocations: [],
       painIntensity: 0,
       painTypes: [],
-      painWorsenedBy: {reasons: [], otherReason: ''},
-      painRelievedBy: {methods: [], otherMethod: ''},
-      smallWin: '',
+      painWorsenedBy: {reasons: []},
+      painRelievedBy: {methods: []},
     },
   });
 
@@ -91,7 +92,7 @@ function PainScale() {
 
   const painIntensity = watch('painIntensity');
 
-  function onSubmit(values: z.infer<typeof painScaleSchema>) {
+  function onSubmit(values: PainScaleValues) {
     console.log(values);
   }
 
@@ -325,15 +326,7 @@ function PainScale() {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
-
-        {/** Question 6b Note */}
-        <Card>
-          <CardHeader>
             <FormLabel>Additional Note (optional)</FormLabel>
-          </CardHeader>
-          <CardContent>
             <FormField
               control={control}
               name="emotionalState.note"
@@ -350,7 +343,9 @@ function PainScale() {
         {/** Question 7 */}
         <Card>
           <CardHeader>
-            <FormLabel>7. One small win or progress today?</FormLabel>
+            <FormLabel>
+              7. One small win or progress today? (optional)
+            </FormLabel>
           </CardHeader>
           <CardContent>
             <FormField

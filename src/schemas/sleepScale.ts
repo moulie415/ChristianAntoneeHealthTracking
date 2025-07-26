@@ -2,7 +2,7 @@ import {z} from 'zod';
 
 export const sleepScaleSchema = z.object({
   sleepQuality: z.enum(
-    ['terrible', 'veryPoor', 'poor', 'fair', 'good', 'excellent'],
+    ['terrible', 'very_poor', 'poor', 'fair', 'good', 'excellent'],
     {
       required_error: 'Please select how well you slept.',
     },
@@ -21,7 +21,7 @@ export const sleepScaleSchema = z.object({
     required_error: 'Please select your night wake-up frequency.',
   }),
   mentalState: z.enum(
-    ['calm', 'slightlyStressed', 'anxious', 'alert', 'unknown'],
+    ['calm', 'slightly_stressed', 'anxious', 'alert', 'unknown'],
     {
       required_error: 'Please describe your mental state before bed.',
     },

@@ -1,8 +1,8 @@
 import {onAuthStateChanged, type User} from 'firebase/auth';
 import {useEffect, useState, type ReactNode} from 'react';
 import {Navigate, useLocation} from 'react-router';
-import {auth} from './App';
-import {Spinner} from './components/ui/spinner';
+import {auth} from '../App';
+import {Spinner} from './ui/spinner';
 
 interface RequireAuthProps {
   children: ReactNode;

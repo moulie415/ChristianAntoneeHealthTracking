@@ -44,11 +44,9 @@ export const MoodEnum = z.enum([
 
 // Schema using enums
 export const painScaleSchema = z.object({
-  painLocations: z
-    .array(PainLocationEnum)
-    .min(1, 'Select at least one area of pain'),
+  painLocations: z.array(PainLocationEnum),
   painIntensity: z.number().int().min(0).max(10),
-  painTypes: z.array(PainTypeEnum).min(1, 'Select at least one pain type'),
+  painTypes: z.array(PainTypeEnum),
 
   painWorsenedBy: z
     .object({

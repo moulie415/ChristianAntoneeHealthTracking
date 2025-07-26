@@ -15,7 +15,7 @@ import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {habitSchema} from '../schemas/habitBuilder';
 
-type HabitFormValues = z.infer<typeof habitSchema>;
+export type HabitFormValues = z.infer<typeof habitSchema>;
 
 export function DailyHabitBuilder() {
   const form = useForm<HabitFormValues>({
@@ -44,14 +44,14 @@ export function DailyHabitBuilder() {
       <CardContent className="pt-6 space-y-4">
         <FormField
           control={form.control}
-          name={name as any}
+          name={name}
           render={({field}) => (
             <FormItem>
               <FormLabel className="font-semibold">{title}</FormLabel>
               <FormControl>
                 <RadioGroup
                   onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  defaultValue={field.value as string}
                   className="flex gap-4">
                   {radioOptions.map(opt => (
                     <FormItem key={opt} className="flex items-center space-x-2">

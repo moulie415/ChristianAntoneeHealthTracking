@@ -17,10 +17,10 @@ import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
 import {sleepScaleSchema} from '../schemas/sleepScale';
 
-type FormValues = z.infer<typeof sleepScaleSchema>;
+export type SleepFormValues = z.infer<typeof sleepScaleSchema>;
 
 function SleepScale() {
-  const form = useForm<FormValues>({
+  const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
     defaultValues: {
       sleepQuality: undefined,
@@ -423,7 +423,7 @@ function SleepScale() {
                       <div
                         key="slightlyStressed"
                         className="flex items-center gap-3">
-                        <RadioGroupItem value="slightlyStressed" />
+                        <RadioGroupItem value="slightly_stressed" />
                         <Label htmlFor="slightlyStressed">
                           {'Slightly stressed'}
                         </Label>
