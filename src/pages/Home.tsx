@@ -38,9 +38,11 @@ const pages = [
 export default function Home() {
   return (
     <main className="p-6 md:p-10 max-w-5xl mx-auto">
+      {/* <img src={logo} width={100} className="m-auto mb-5" /> */}
       <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">
         Welcome Back
       </h1>
+
       <p className="text-center text-muted-foreground mb-10 text-sm md:text-base">
         Choose a check-in or habit builder to support your recovery journey.
       </p>

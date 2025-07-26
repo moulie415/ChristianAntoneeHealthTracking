@@ -81,7 +81,6 @@ function PainScale() {
       painTypes: [],
       painWorsenedBy: {reasons: [], otherReason: ''},
       painRelievedBy: {methods: [], otherMethod: ''},
-      emotionalState: {mood: 'hopeful', note: ''},
       smallWin: '',
     },
   });

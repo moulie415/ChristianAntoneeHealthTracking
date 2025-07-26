@@ -1,33 +1,21 @@
 import {z} from 'zod';
 
 export const habitSchema = z.object({
-  mobilityRoutine: z.enum(['Yes', 'No'], {
-    required_error: 'Select Yes or No',
-  }),
+  mobilityRoutine: z.boolean(),
   mobilityNote: z.string().optional(),
 
-  strengthRoutine: z.enum(['Yes', 'No'], {
-    required_error: 'Select Yes or No',
-  }),
+  strengthRoutine: z.boolean(),
   strengthNote: z.string().optional(),
 
-  preBedRoutine: z.enum(['Yes', 'No'], {
-    required_error: 'Select Yes or No',
-  }),
+  preBedRoutine: z.boolean(),
   preBedNote: z.string().optional(),
 
-  sleepingPosition: z.enum(['Yes', 'No', 'Didn’t need to'], {
-    required_error: 'Select an option',
-  }),
+  sleepingPosition: z.enum(['yes', 'no', 'no_need_to']),
   sleepingNote: z.string().optional(),
 
-  breathingPractice: z.enum(['Yes', 'No'], {
-    required_error: 'Select Yes or No',
-  }),
+  breathingPractice: z.boolean(),
   breathingNote: z.string().optional(),
 
-  aerobicExercise: z.enum(['Yes', 'No'], {
-    required_error: 'Select Yes or No',
-  }),
+  aerobicExercise: z.boolean(),
   aerobicNote: z.string().optional(),
 });

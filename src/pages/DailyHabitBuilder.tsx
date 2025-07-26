@@ -20,14 +20,6 @@ type HabitFormValues = z.infer<typeof habitSchema>;
 export function DailyHabitBuilder() {
   const form = useForm<HabitFormValues>({
     resolver: zodResolver(habitSchema),
-    defaultValues: {
-      mobilityRoutine: 'No',
-      strengthRoutine: 'No',
-      preBedRoutine: 'No',
-      sleepingPosition: 'No',
-      breathingPractice: 'No',
-      aerobicExercise: 'No',
-    },
   });
 
   const onSubmit = (values: HabitFormValues) => {

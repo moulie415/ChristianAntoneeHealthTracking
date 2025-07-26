@@ -5,6 +5,7 @@ import {useEffect} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router';
 import {Toaster} from 'sonner';
 import {firebaseConfig} from './FIREBASE_CONFIG';
+import Layout from './Layout';
 import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -17,47 +18,53 @@ import {RequireAuth} from './RequireAuth';
 const router = createBrowserRouter([
   {
     path: '/',
-    Component: Home,
-  },
-  {
-    path: 'login',
-    element: (
-      <RedirectIfAuthenticated>
-        <Login />
-      </RedirectIfAuthenticated>
-    ),
-  },
-  {
-    path: '/pain-scale',
-    element: (
-      <RequireAuth>
-        <PainScale />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/sleep-scale',
-    element: (
-      <RequireAuth>
-        <SleepScale />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/stress-scale',
-    element: (
-      <RequireAuth>
-        <StressScale />
-      </RequireAuth>
-    ),
-  },
-  {
-    path: '/daily-habit-builder',
-    element: (
-      <RequireAuth>
-        <DailyHabitBuilder />
-      </RequireAuth>
-    ),
+    element: <Layout />,
+    children: [
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: 'login',
+        element: (
+          <RedirectIfAuthenticated>
+            <Login />
+          </RedirectIfAuthenticated>
+        ),
+      },
+      {
+        path: 'pain-scale',
+        element: (
+          <RequireAuth>
+            <PainScale />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'sleep-scale',
+        element: (
+          <RequireAuth>
+            <SleepScale />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'stress-scale',
+        element: (
+          <RequireAuth>
+            <StressScale />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'daily-habit-builder',
+        element: (
+          <RequireAuth>
+            <DailyHabitBuilder />
+          </RequireAuth>
+        ),
+      },
+    ],
   },
 ]);
 

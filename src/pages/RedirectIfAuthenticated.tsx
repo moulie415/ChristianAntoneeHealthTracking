@@ -13,9 +13,8 @@ export default function RedirectIfAuthenticated({
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
-      console.log(user);
       if (user) {
-        navigate('/', {replace: true}); // Redirect to homepage if logged in
+        navigate('/', {replace: true});
       } else {
         setLoading(false);
       }
