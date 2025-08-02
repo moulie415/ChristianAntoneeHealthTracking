@@ -41,7 +41,6 @@ export function DailyHabitBuilder() {
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('habit', user?.uid || '');
 
-
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

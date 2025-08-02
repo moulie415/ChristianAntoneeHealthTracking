@@ -20,7 +20,11 @@ import {Spinner} from '../components/ui/spinner';
 import {useAuth} from '../context/AuthContext';
 import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
 import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
-import {sleepScaleSchema} from '../schemas/sleepScale';
+import {
+  DisruptionEnum,
+  HelperEnum,
+  sleepScaleSchema,
+} from '../schemas/sleepScale';
 
 export type SleepFormValues = z.infer<typeof sleepScaleSchema>;
 
@@ -29,6 +33,8 @@ function SleepScale() {
 
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('sleep', user?.uid || '');
+
+  console.log(entries);
 
   const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
@@ -45,26 +51,35 @@ function SleepScale() {
     }
   }, [todayEntry?.form, form]);
 
-  const disruptionOptions = [
-    'Back or nerve pain',
-    'Hip discomfort',
-    'Couldn’t find a comfortable position',
-    'Racing thoughts or stress',
-    'Bathroom trips',
-    'Noise or light in the room',
-    'Other',
+  const disruptionOptions: {
+    label: string;
+    value: z.infer<typeof DisruptionEnum>;
+  }[] = [
+    {label: 'Back or nerve pain', value: 'back_pain'},
+    {label: 'Hip discomfort', value: 'hip_discomfort'},
+    {
+      label: 'Couldn’t find a comfortable position',
+      value: 'uncomfortable_position',
+    },
+    {label: 'Racing thoughts or stress', value: 'racing_thoughts'},
+    {label: 'Bathroom trips', value: 'bathroom_trips'},
+    {label: 'Noise or light in the room', value: 'noise_or_light'},
+    {label: 'Other', value: 'other'},
   ];
 
-  const helperOptions = [
-    'Side sleeping with pillow support',
-    'Heat pad or warm bath before bed',
-    'Sleeping pills',
-    'Relaxing breathwork or meditation',
-    'Avoided screens before bed',
-    'Herbal tea or supplement',
-    'White noise or blackout curtains',
-    'Gentle stretching or mobility',
-    'Other',
+  const helperOptions: {
+    label: string;
+    value: z.infer<typeof HelperEnum>;
+  }[] = [
+    {label: 'Side sleeping with pillow support', value: 'side_sleeping'},
+    {label: 'Heat pad or warm bath before bed', value: 'heat_pad'},
+    {label: 'Sleeping pills', value: 'sleeping_pills'},
+    {label: 'Relaxing breathwork or meditation', value: 'breathwork'},
+    {label: 'Avoided screens before bed', value: 'no_screens'},
+    {label: 'Herbal tea or supplement', value: 'herbal_tea'},
+    {label: 'White noise or blackout curtains', value: 'white_noise'},
+    {label: 'Gentle stretching or mobility', value: 'stretching'},
+    {label: 'Other', value: 'other'},
   ];
 
   const {loading, submitForm} = useSubmitTrackingForm('sleep', user?.uid || '');
@@ -110,7 +125,7 @@ function SleepScale() {
                           </Label>
                         </div>
                         <div key="veryPoor" className="flex items-center gap-3">
-                          <RadioGroupItem value="veryPoor" />
+                          <RadioGroupItem value="very_poor" />
                           <Label htmlFor="veryPoor">
                             {
                               '😖 Very Poor: Constantly waking, pain was unbearable.'
@@ -167,35 +182,35 @@ function SleepScale() {
                 name="disruptions"
                 render={() => (
                   <FormItem>
-                    {disruptionOptions.map(option => (
+                    {disruptionOptions.map(({label, value}) => (
                       <FormField
-                        key={option}
+                        key={value}
                         control={form.control}
                         name="disruptions"
                         render={({field}) => {
                           return (
                             <FormItem
-                              key={option}
+                              key={value}
                               className="flex flex-row items-start space-y-1">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(option)}
+                                  checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
                                     return checked
                                       ? field.onChange([
                                           ...(field.value || []),
-                                          option,
+                                          value,
                                         ])
                                       : field.onChange(
                                           field.value?.filter(
-                                            val => val !== option,
+                                            val => val !== value,
                                           ),
                                         );
                                   }}
                                 />
                               </FormControl>
                               <FormLabel className="font-normal">
-                                {option}
+                                {label}
                               </FormLabel>
                             </FormItem>
                           );
@@ -203,7 +218,7 @@ function SleepScale() {
                       />
                     ))}
 
-                    {form.watch('disruptions')?.includes('Other') && (
+                    {form.watch('disruptions')?.includes('other') && (
                       <FormField
                         control={form.control}
                         name="otherDisruption"
@@ -234,35 +249,35 @@ function SleepScale() {
                 name="helpers"
                 render={() => (
                   <FormItem>
-                    {helperOptions.map(option => (
+                    {helperOptions.map(({label, value}) => (
                       <FormField
-                        key={option}
+                        key={value}
                         control={form.control}
                         name="helpers"
                         render={({field}) => {
                           return (
                             <FormItem
-                              key={option}
+                              key={value}
                               className="flex flex-row items-start space-y-1">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(option)}
+                                  checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
                                     return checked
                                       ? field.onChange([
                                           ...(field.value || []),
-                                          option,
+                                          value,
                                         ])
                                       : field.onChange(
                                           field.value?.filter(
-                                            val => val !== option,
+                                            val => val !== value,
                                           ),
                                         );
                                   }}
                                 />
                               </FormControl>
                               <FormLabel className="font-normal">
-                                {option}
+                                {label}
                               </FormLabel>
                             </FormItem>
                           );
@@ -270,7 +285,7 @@ function SleepScale() {
                       />
                     ))}
 
-                    {form.watch('helpers')?.includes('Other') && (
+                    {form.watch('helpers')?.includes('other') && (
                       <FormField
                         control={form.control}
                         name="otherHelper"
