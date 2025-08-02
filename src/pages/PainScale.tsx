@@ -15,7 +15,11 @@ import {Input} from '../components/ui/input';
 import {Label} from '../components/ui/label';
 import {RadioGroup, RadioGroupItem} from '../components/ui/radio-group';
 import {Slider} from '../components/ui/slider';
+import {Spinner} from '../components/ui/spinner';
 import {Textarea} from '../components/ui/textarea';
+import {useAuth} from '../context/AuthContext';
+import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
+import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
 import {
   MoodEnum,
   PainLocationEnum,
@@ -75,14 +79,25 @@ const moodOptions: Option<z.infer<typeof MoodEnum>>[] = [
 export type PainScaleValues = z.infer<typeof painScaleSchema>;
 
 function PainScale() {
+  const user = useAuth();
+
+  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
+    useUserDailyEntries('pain', user?.uid || '');
+
+  console.log(entries);
+
   const form = useForm<PainScaleValues>({
     resolver: zodResolver(painScaleSchema),
     defaultValues: {
+      emotionalState: {
+        note: '',
+      },
       painLocations: [],
       painIntensity: 0,
       painTypes: [],
       painWorsenedBy: {reasons: []},
       painRelievedBy: {methods: []},
+      smallWin: '',
     },
   });
 
@@ -92,8 +107,14 @@ function PainScale() {
 
   const painIntensity = watch('painIntensity');
 
-  function onSubmit(values: PainScaleValues) {
-    console.log(values);
+  const {loading, submitForm} = useSubmitTrackingForm('pain', user?.uid || '');
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="large" />
+      </div>
+    );
   }
 
   return (
@@ -106,7 +127,7 @@ function PainScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
           {/** Question 1 */}
           <Card>
             <CardHeader>

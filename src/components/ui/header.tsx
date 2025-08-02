@@ -1,10 +1,11 @@
 import {Button} from '@/components/ui/button';
-import {onAuthStateChanged, signOut} from 'firebase/auth';
+import {signOut} from 'firebase/auth';
 import {LogIn, LogOut} from 'lucide-react';
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router';
 import {auth} from '../../App';
 import logo from '../../assets/logo.png';
+import {useAuth} from '../../context/AuthContext';
 import {
   Dialog,
   DialogContent,
@@ -18,13 +19,11 @@ import {
 const Header: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showDialog, setShowDialog] = useState(false);
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      setIsLoggedIn(!!user);
-    });
 
-    return () => unsubscribe();
-  }, []);
+  const user = useAuth();
+  useEffect(() => {
+    setIsLoggedIn(!!user);
+  }, [user]);
 
   const navigate = useNavigate();
 

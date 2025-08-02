@@ -15,6 +15,10 @@ import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
+import {Spinner} from '../components/ui/spinner';
+import {useAuth} from '../context/AuthContext';
+import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
+import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
 import {stressSchema} from '../schemas/stressScale';
 
 const triggerOptions = [
@@ -53,6 +57,13 @@ const stressHelperOptions = [
 export type StressFormValues = z.infer<typeof stressSchema>;
 
 function StressScale() {
+  const user = useAuth();
+
+  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
+    useUserDailyEntries('stress', user?.uid || '');
+
+  console.log(entries);
+
   const form = useForm<StressFormValues>({
     resolver: zodResolver(stressSchema),
     defaultValues: {
@@ -67,9 +78,18 @@ function StressScale() {
     },
   });
 
-  const onSubmit = (data: StressFormValues) => {
-    console.log('Submitted Data:', data);
-  };
+  const {loading, submitForm} = useSubmitTrackingForm(
+    'stress',
+    user?.uid || '',
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
@@ -81,7 +101,7 @@ function StressScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
           {/* 1. Stress Level */}
           <Card>
             <CardHeader>

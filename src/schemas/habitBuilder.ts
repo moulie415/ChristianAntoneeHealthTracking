@@ -10,7 +10,7 @@ export const habitSchema = z.object({
   preBedRoutine: z.boolean(),
   preBedNote: z.string().optional(),
 
-  sleepingPosition: z.enum(['yes', 'no', 'no_need_to']),
+  sleepingPosition: z.union([z.boolean(), z.enum(['no_need_to'])]),
   sleepingNote: z.string().optional(),
 
   breathingPractice: z.boolean(),

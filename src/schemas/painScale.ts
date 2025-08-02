@@ -1,6 +1,5 @@
 import {z} from 'zod';
 
-// Define reusable enums first
 export const PainLocationEnum = z.enum([
   'lower_back_centered',
   'lower_back_one_side',

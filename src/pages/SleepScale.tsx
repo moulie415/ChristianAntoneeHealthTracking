@@ -15,11 +15,22 @@ import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
+import {Spinner} from '../components/ui/spinner';
+import {useAuth} from '../context/AuthContext';
+import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
+import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
 import {sleepScaleSchema} from '../schemas/sleepScale';
 
 export type SleepFormValues = z.infer<typeof sleepScaleSchema>;
 
 function SleepScale() {
+  const user = useAuth();
+
+  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
+    useUserDailyEntries('sleep', user?.uid || '');
+
+  console.log(entries);
+
   const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
     defaultValues: {
@@ -51,6 +62,16 @@ function SleepScale() {
     'Other',
   ];
 
+  const {loading, submitForm} = useSubmitTrackingForm('sleep', user?.uid || '');
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <h2 className="text-2xl font-bold mb-2">Daily Sleep Check-In</h2>
@@ -60,9 +81,7 @@ function SleepScale() {
       </p>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(values => console.log(values))}
-          className="space-y-6">
+        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
           {/* Question 1 */}
           <Card>
             <CardHeader>

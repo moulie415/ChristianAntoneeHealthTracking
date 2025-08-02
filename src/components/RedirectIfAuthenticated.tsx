@@ -1,7 +1,6 @@
-import {onAuthStateChanged} from 'firebase/auth';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router';
-import {auth} from '../App';
+import {useAuth} from '../context/AuthContext';
 
 export default function RedirectIfAuthenticated({
   children,
@@ -11,17 +10,15 @@ export default function RedirectIfAuthenticated({
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, user => {
-      if (user) {
-        navigate('/', {replace: true});
-      } else {
-        setLoading(false);
-      }
-    });
+  const user = useAuth();
 
-    return () => unsubscribe();
-  }, [navigate]);
+  useEffect(() => {
+    if (user) {
+      navigate('/', {replace: true});
+    } else {
+      setLoading(false);
+    }
+  }, [navigate, user]);
 
   if (loading) return null;
 

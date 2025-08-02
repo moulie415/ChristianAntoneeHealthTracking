@@ -13,6 +13,10 @@ import {Textarea} from '@/components/ui/textarea';
 import {zodResolver} from '@hookform/resolvers/zod';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import {Spinner} from '../components/ui/spinner';
+import {useAuth} from '../context/AuthContext';
+import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
+import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
 import {habitSchema} from '../schemas/habitBuilder';
 
 export type HabitFormValues = z.infer<typeof habitSchema>;
@@ -20,24 +24,48 @@ export type HabitFormValues = z.infer<typeof habitSchema>;
 export function DailyHabitBuilder() {
   const form = useForm<HabitFormValues>({
     resolver: zodResolver(habitSchema),
+    defaultValues: {
+      preBedNote: '',
+      aerobicNote: '',
+      mobilityNote: '',
+      sleepingNote: '',
+      strengthNote: '',
+      breathingNote: '',
+    },
   });
 
-  const onSubmit = (values: HabitFormValues) => {
-    console.log('Submitted habit form:', values);
-    // TODO: send to backend or Firebase
-  };
+  const user = useAuth();
+
+  const {loading, submitForm} = useSubmitTrackingForm('habit', user?.uid || '');
+
+  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
+    useUserDailyEntries('habit', user?.uid || '');
+
+  console.log(entries, hasTodayEntry, isLoading, historicEntries);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Spinner size="large" />
+      </div>
+    );
+  }
+
+  type Option = boolean | 'no_need_to';
+
+  const booleanLabel = (val: boolean) => (val ? 'Yes' : 'No');
 
   const Section = ({
     title,
     name,
     noteName,
-    radioOptions,
+    options,
     notePlaceholder,
   }: {
     title: string;
     name: keyof HabitFormValues;
     noteName: keyof HabitFormValues;
-    radioOptions: string[];
+    options: Option[];
     notePlaceholder: string;
   }) => (
     <Card className="mb-6">
@@ -45,27 +73,54 @@ export function DailyHabitBuilder() {
         <FormField
           control={form.control}
           name={name}
-          render={({field}) => (
-            <FormItem>
-              <FormLabel className="font-semibold">{title}</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value as string}
-                  className="flex gap-4">
-                  {radioOptions.map(opt => (
-                    <FormItem key={opt} className="flex items-center space-x-2">
-                      <FormControl>
-                        <RadioGroupItem value={opt} />
-                      </FormControl>
-                      <FormLabel className="font-normal">{opt}</FormLabel>
-                    </FormItem>
-                  ))}
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+          render={({field}) => {
+            // Map form value (boolean|string) to string for RadioGroup defaultValue
+            const stringValue = String(field.value);
+
+            return (
+              <FormItem>
+                <FormLabel className="font-semibold">{title}</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={val => {
+                      // Convert string back to proper type
+                      if (val === 'true') {
+                        field.onChange(true);
+                      } else if (val === 'false') {
+                        field.onChange(false);
+                      } else {
+                        // for "no_need_to"
+                        field.onChange(val);
+                      }
+                    }}
+                    defaultValue={stringValue}
+                    className="flex gap-4">
+                    {options.map(opt => {
+                      // label to show user
+                      const label =
+                        typeof opt === 'boolean'
+                          ? booleanLabel(opt)
+                          : opt === 'no_need_to'
+                            ? "Didn't need to"
+                            : opt;
+
+                      return (
+                        <FormItem
+                          key={String(opt)}
+                          className="flex items-center space-x-2">
+                          <FormControl>
+                            <RadioGroupItem value={String(opt)} />
+                          </FormControl>
+                          <FormLabel className="font-normal">{label}</FormLabel>
+                        </FormItem>
+                      );
+                    })}
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
         />
 
         <FormField
@@ -101,47 +156,47 @@ export function DailyHabitBuilder() {
         better.
       </p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
           <Section
             title="🧘‍♂️ 1. Mobility Routine"
             name="mobilityRoutine"
             noteName="mobilityNote"
-            radioOptions={['Yes', 'No']}
+            options={[true, false]}
             notePlaceholder="Which movement helped the most?"
           />
           <Section
             title="💪 2. Strength Routine"
             name="strengthRoutine"
             noteName="strengthNote"
-            radioOptions={['Yes', 'No']}
+            options={[true, false]}
             notePlaceholder="How did your body feel afterward?"
           />
           <Section
             title="💤 3. Pre-Bed Routine"
             name="preBedRoutine"
             noteName="preBedNote"
-            radioOptions={['Yes', 'No']}
+            options={[true, false]}
             notePlaceholder="What did you include? (e.g. stretching, reading, dim lights)"
           />
           <Section
             title="🛏️ 4. Sleeping Position Exploration"
             name="sleepingPosition"
             noteName="sleepingNote"
-            radioOptions={['Yes', 'No', 'Didn’t need to']}
+            options={[true, false, 'no_need_to']}
             notePlaceholder="Which position helped (or didn’t)?"
           />
           <Section
             title="🌬️ 5. Slow, Deep Breathing"
             name="breathingPractice"
             noteName="breathingNote"
-            radioOptions={['Yes', 'No']}
+            options={[true, false]}
             notePlaceholder="When did you do it? For how long?"
           />
           <Section
             title="🚶‍♂️ 6. Aerobic Exercise (15-min +)"
             name="aerobicExercise"
             noteName="aerobicNote"
-            radioOptions={['Yes', 'No']}
+            options={[true, false]}
             notePlaceholder="How did it feel on your back?"
           />
           <Button type="submit" className="w-full">

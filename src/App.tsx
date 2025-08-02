@@ -1,6 +1,8 @@
+import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {initializeApp} from 'firebase/app';
 import {initializeAppCheck, ReCaptchaV3Provider} from 'firebase/app-check';
 import {getAuth} from 'firebase/auth';
+import {getFirestore} from 'firebase/firestore';
 import {getFunctions} from 'firebase/functions';
 import {useEffect} from 'react';
 import {createBrowserRouter, RouterProvider} from 'react-router';
@@ -8,6 +10,7 @@ import {Toaster} from 'sonner';
 import Layout from './components/Layout';
 import RedirectIfAuthenticated from './components/RedirectIfAuthenticated';
 import {RequireAuth} from './components/RequireAuth';
+import {AuthProvider} from './context/AuthContext';
 import {firebaseConfig} from './FIREBASE_CONFIG';
 import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
 import Home from './pages/Home';
@@ -72,6 +75,7 @@ const router = createBrowserRouter([
 export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const functions = getFunctions(app);
+export const db = getFirestore(app);
 
 function App() {
   useEffect(() => {
@@ -88,11 +92,15 @@ function App() {
     });
   }, []);
 
+  const queryClient = new QueryClient();
+
   return (
-    <>
-      <RouterProvider router={router} />
-      <Toaster />
-    </>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
