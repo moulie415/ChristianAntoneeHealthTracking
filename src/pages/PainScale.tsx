@@ -28,6 +28,7 @@ import {
   RelieveEnum,
   WorsenEnum,
 } from '../schemas/painScale';
+import { useEffect } from 'react';
 
 type Option<T extends string> = {label: string; value: T};
 
@@ -84,7 +85,6 @@ function PainScale() {
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('pain', user?.uid || '');
 
-  console.log(entries);
 
   const form = useForm<PainScaleValues>({
     resolver: zodResolver(painScaleSchema),
@@ -100,6 +100,12 @@ function PainScale() {
       smallWin: '',
     },
   });
+
+  useEffect(() => {
+    if (todayEntry?.form) {
+      form.reset(todayEntry?.form);
+    }
+  }, [todayEntry?.form, form]);
 
   const {watch, handleSubmit, control} = form;
   const painWorsenedBy = watch('painWorsenedBy');

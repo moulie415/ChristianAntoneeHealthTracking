@@ -11,6 +11,7 @@ import {
 import {Input} from '@/components/ui/input';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {zodResolver} from '@hookform/resolvers/zod';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
@@ -29,8 +30,6 @@ function SleepScale() {
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('sleep', user?.uid || '');
 
-  console.log(entries);
-
   const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
     defaultValues: {
@@ -39,6 +38,12 @@ function SleepScale() {
       helpers: [],
     },
   });
+
+  useEffect(() => {
+    if (todayEntry?.form) {
+      form.reset(todayEntry?.form);
+    }
+  }, [todayEntry?.form, form]);
 
   const disruptionOptions = [
     'Back or nerve pain',

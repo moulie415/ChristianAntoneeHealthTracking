@@ -11,8 +11,10 @@ import {
 import {Input} from '@/components/ui/input';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {zodResolver} from '@hookform/resolvers/zod';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import {Section} from '../components/Section';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
 import {Spinner} from '../components/ui/spinner';
@@ -63,6 +65,22 @@ const stressLevelOptions = [
   {label: '😫 10 – Maxed Out: Exhausted or drained', value: 10},
 ] as const;
 
+const painImpactOptions = [
+  {label: 'Yes — made it worse', value: 'worse'},
+  {label: 'A little — felt more tense', value: 'tense'},
+  {label: 'Not sure', value: 'not_sure'},
+  {label: 'No noticeable impact', value: 'no_impact'},
+  {label: 'Helped distract me from pain', value: 'helped_distract'},
+];
+
+const reflectionFeelingOptions = [
+  {label: '😌 More aware and calm', value: 'aware'},
+  {label: '🙂 A bit better', value: 'better'},
+  {label: '😐 No change', value: 'no_change'},
+  {label: '😟 Still overwhelmed', value: 'overwhelmed'},
+  {label: '😣 Feeling worse', value: 'worse'},
+];
+
 export type StressFormValues = z.infer<typeof stressSchema>;
 
 function StressScale() {
@@ -70,8 +88,6 @@ function StressScale() {
 
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('stress', user?.uid || '');
-
-  console.log(entries);
 
   const form = useForm<StressFormValues>({
     resolver: zodResolver(stressSchema),
@@ -86,6 +102,12 @@ function StressScale() {
       reflectionFeeling: undefined,
     },
   });
+
+  useEffect(() => {
+    if (todayEntry?.form) {
+      form.reset(todayEntry?.form);
+    }
+  }, [todayEntry?.form, form]);
 
   const {loading, submitForm} = useSubmitTrackingForm(
     'stress',
@@ -305,121 +327,19 @@ function StressScale() {
             </CardContent>
           </Card>
 
-          {/* 5. Did stress affect pain */}
-          <Card>
-            <CardHeader>
-              <FormLabel> 5. Did your stress affect your pain today?</FormLabel>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <FormField
-                control={form.control}
-                name="painImpact"
-                render={({field}) => (
-                  <FormItem>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="space-y-2">
-                        <FormItem
-                          key="worse"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="worse" />
-                          <Label htmlFor="worse"> Yes — made it worse</Label>
-                        </FormItem>
-                        <FormItem
-                          key="tense"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="tense" />
-                          <Label htmlFor="tense">
-                            A little — felt more tense
-                          </Label>
-                        </FormItem>
-                        <FormItem
-                          key="not_sure"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="not_sure" />
-                          <Label htmlFor="not_sure"> Not sure</Label>
-                        </FormItem>
-                        <FormItem
-                          key="no_impact"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="no_impact" />
-                          <Label htmlFor="no_impact">
-                            No noticeable impact
-                          </Label>
-                        </FormItem>
-                        <FormItem
-                          key="helped_distract"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="helped_distract" />
-                          <Label htmlFor="helped_distract">
-                            Helped distract me from pain
-                          </Label>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+          <Section
+            title="5. Did your stress affect your pain today?"
+            name="painImpact"
+            radioOptions={painImpactOptions}
+            control={form.control}
+          />
 
-          {/* 6. Final Reflection */}
-          <Card>
-            <CardHeader>
-              <FormLabel> 6. How do you feel now, after reflecting?</FormLabel>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <FormField
-                control={form.control}
-                name="reflectionFeeling"
-                render={({field}) => (
-                  <FormItem>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="space-y-2">
-                        <FormItem
-                          key="aware"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="aware" />
-                          <Label htmlFor="aware">😌 More aware and calm</Label>
-                        </FormItem>
-                        <FormItem
-                          key="better"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="better" />
-                          <Label htmlFor="better"> 🙂 A bit better</Label>
-                        </FormItem>
-                        <FormItem
-                          key="no_change"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="no_change" />
-                          <Label htmlFor="no_change"> 😐 No change</Label>
-                        </FormItem>
-                        <FormItem
-                          key="overwhelmed"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="overwhelmed" />
-                          <Label htmlFor="overwhelmed">
-                            😟 Still overwhelmed
-                          </Label>
-                        </FormItem>
-                        <FormItem key="" className="flex items-center gap-3">
-                          <RadioGroupItem value="worse" /> 😣 Feeling worse
-                          <Label htmlFor=""></Label>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
+          <Section
+            title="6. How do you feel now, after reflecting?"
+            name="reflectionFeeling"
+            radioOptions={reflectionFeelingOptions}
+            control={form.control}
+          />
 
           <div className="pt-4 flex justify-center">
             <Button type="submit" className="w-full sm:w-auto">

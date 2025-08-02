@@ -41,7 +41,6 @@ export function DailyHabitBuilder() {
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('habit', user?.uid || '');
 
-  console.log(entries, hasTodayEntry, isLoading, historicEntries);
 
   if (loading || isLoading) {
     return (
@@ -55,7 +54,7 @@ export function DailyHabitBuilder() {
 
   const booleanLabel = (val: boolean) => (val ? 'Yes' : 'No');
 
-  const Section = ({
+  const DailyHabitSection = ({
     title,
     name,
     noteName,
@@ -157,42 +156,42 @@ export function DailyHabitBuilder() {
       </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
-          <Section
+          <DailyHabitSection
             title="🧘‍♂️ 1. Mobility Routine"
             name="mobilityRoutine"
             noteName="mobilityNote"
             options={[true, false]}
             notePlaceholder="Which movement helped the most?"
           />
-          <Section
+          <DailyHabitSection
             title="💪 2. Strength Routine"
             name="strengthRoutine"
             noteName="strengthNote"
             options={[true, false]}
             notePlaceholder="How did your body feel afterward?"
           />
-          <Section
+          <DailyHabitSection
             title="💤 3. Pre-Bed Routine"
             name="preBedRoutine"
             noteName="preBedNote"
             options={[true, false]}
             notePlaceholder="What did you include? (e.g. stretching, reading, dim lights)"
           />
-          <Section
+          <DailyHabitSection
             title="🛏️ 4. Sleeping Position Exploration"
             name="sleepingPosition"
             noteName="sleepingNote"
             options={[true, false, 'no_need_to']}
             notePlaceholder="Which position helped (or didn’t)?"
           />
-          <Section
+          <DailyHabitSection
             title="🌬️ 5. Slow, Deep Breathing"
             name="breathingPractice"
             noteName="breathingNote"
             options={[true, false]}
             notePlaceholder="When did you do it? For how long?"
           />
-          <Section
+          <DailyHabitSection
             title="🚶‍♂️ 6. Aerobic Exercise (15-min +)"
             name="aerobicExercise"
             noteName="aerobicNote"
