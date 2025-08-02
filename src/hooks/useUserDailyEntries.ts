@@ -1,6 +1,11 @@
 import {useQuery} from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import {getDailyEntries, type FormType, type TimeSpan} from '../api';
+import {
+  getDailyEntries,
+  type FormEntry,
+  type FormType,
+  type TimeSpan,
+} from '../api';
 
 export const useUserDailyEntries = (
   type: FormType,
@@ -21,24 +26,18 @@ export const useUserDailyEntries = (
         id: doc.id,
         ...(doc.data() as any),
         updatedAt: doc.data().updatedAt.toDate?.() ?? new Date(),
-      })),
+      })) as FormEntry[],
   });
 
   const today = dayjs().startOf('day');
 
   const todayEntry = entries?.find(entry =>
-    dayjs(
-      entry.updatedAt.toDate ? entry.updatedAt.toDate() : entry.updatedAt,
-    ).isSame(today, 'day'),
+    dayjs(entry.updatedAt).isSame(today, 'day'),
   );
 
-  const historicEntries =
-    entries?.filter(
-      entry =>
-        !dayjs(
-          entry.updatedAt.toDate ? entry.updatedAt.toDate() : entry.updatedAt,
-        ).isSame(today, 'day'),
-    ) ?? [];
+  const historicEntries: FormEntry[] =
+    entries?.filter(entry => !dayjs(entry.updatedAt).isSame(today, 'day')) ??
+    [];
 
   const hasTodayEntry = !!todayEntry;
 

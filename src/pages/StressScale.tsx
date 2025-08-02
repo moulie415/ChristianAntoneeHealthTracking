@@ -105,7 +105,7 @@ function StressScale() {
 
   useEffect(() => {
     if (todayEntry?.form) {
-      form.reset(todayEntry?.form);
+      form.reset(todayEntry?.form as StressFormValues);
     }
   }, [todayEntry?.form, form]);
 

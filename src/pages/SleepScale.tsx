@@ -47,7 +47,7 @@ function SleepScale() {
 
   useEffect(() => {
     if (todayEntry?.form) {
-      form.reset(todayEntry?.form);
+      form.reset(todayEntry?.form as SleepFormValues);
     }
   }, [todayEntry?.form, form]);
 

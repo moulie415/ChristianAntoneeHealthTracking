@@ -103,7 +103,7 @@ function PainScale() {
 
   useEffect(() => {
     if (todayEntry?.form) {
-      form.reset(todayEntry?.form);
+      form.reset(todayEntry?.form as PainScaleValues);
     }
   }, [todayEntry?.form, form]);
 

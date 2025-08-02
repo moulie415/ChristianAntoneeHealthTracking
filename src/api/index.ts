@@ -1,5 +1,12 @@
 import dayjs from 'dayjs';
-import {collection, getDocs, orderBy, query, where} from 'firebase/firestore';
+import {
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  Timestamp,
+  where,
+} from 'firebase/firestore';
 import {httpsCallable} from 'firebase/functions';
 import {db, functions} from '../App';
 import type {HabitFormValues} from '../pages/DailyHabitBuilder';
@@ -23,6 +30,14 @@ export const submitTrackingForm = (type: FormType, form: FormDataType) => {
 };
 
 export type TimeSpan = 'weekly' | 'monthly' | 'yearly';
+
+export interface FormEntry {
+  dateKey: string;
+  form: FormDataType;
+  id: string;
+  type: FormType;
+  updatedAt: Date;
+}
 
 export const getDailyEntries = async (
   type: FormType,

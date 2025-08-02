@@ -11,6 +11,7 @@ import {
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {Textarea} from '@/components/ui/textarea';
 import {zodResolver} from '@hookform/resolvers/zod';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {Spinner} from '../components/ui/spinner';
@@ -40,6 +41,12 @@ export function DailyHabitBuilder() {
 
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('habit', user?.uid || '');
+
+  useEffect(() => {
+    if (todayEntry?.form) {
+      form.reset(todayEntry?.form as HabitFormValues);
+    }
+  }, [todayEntry?.form, form]);
 
   if (loading || isLoading) {
     return (
