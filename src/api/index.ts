@@ -1,12 +1,5 @@
 import dayjs from 'dayjs';
-import {
-  collection,
-  getDocs,
-  orderBy,
-  query,
-  Timestamp,
-  where,
-} from 'firebase/firestore';
+import {collection, getDocs, orderBy, query, where} from 'firebase/firestore';
 import {httpsCallable} from 'firebase/functions';
 import {db, functions} from '../App';
 import type {HabitFormValues} from '../pages/DailyHabitBuilder';

@@ -11,10 +11,11 @@ import {
 import {Input} from '@/components/ui/input';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
 import {Section} from '../components/Section';
+import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
 import {Spinner} from '../components/ui/spinner';
@@ -86,6 +87,8 @@ export type StressFormValues = z.infer<typeof stressSchema>;
 function StressScale() {
   const user = useAuth();
 
+  const [editToday, setEditToday] = useState(false);
+
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('stress', user?.uid || '');
 
@@ -114,11 +117,22 @@ function StressScale() {
     user?.uid || '',
   );
 
+  const onSubmit = (values: StressFormValues) => {
+    submitForm(values);
+    setEditToday(false);
+  };
+
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />
       </div>
+    );
+  }
+
+  if (hasTodayEntry && !editToday) {
+    return (
+      <SubmissionSuccess type="stress" onEdit={() => setEditToday(true)} />
     );
   }
 
@@ -132,7 +146,7 @@ function StressScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* 1. Stress Level */}
           <Card>
             <CardHeader>

@@ -7,8 +7,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {zodResolver} from '@hookform/resolvers/zod';
+import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Button} from '../components/ui/button';
 import {Checkbox} from '../components/ui/checkbox';
 import {Input} from '../components/ui/input';
@@ -28,7 +30,6 @@ import {
   RelieveEnum,
   WorsenEnum,
 } from '../schemas/painScale';
-import { useEffect } from 'react';
 
 type Option<T extends string> = {label: string; value: T};
 
@@ -85,6 +86,7 @@ function PainScale() {
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('pain', user?.uid || '');
 
+  const [editToday, setEditToday] = useState(false);
 
   const form = useForm<PainScaleValues>({
     resolver: zodResolver(painScaleSchema),
@@ -115,12 +117,21 @@ function PainScale() {
 
   const {loading, submitForm} = useSubmitTrackingForm('pain', user?.uid || '');
 
+  const onSubmit = (values: PainScaleValues) => {
+    submitForm(values);
+    setEditToday(false);
+  };
+
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />
       </div>
     );
+  }
+
+  if (hasTodayEntry && !editToday) {
+    return <SubmissionSuccess type="pain" onEdit={() => setEditToday(true)} />;
   }
 
   return (
@@ -133,7 +144,7 @@ function PainScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/** Question 1 */}
           <Card>
             <CardHeader>

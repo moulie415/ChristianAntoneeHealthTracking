@@ -11,9 +11,10 @@ import {
 import {Input} from '@/components/ui/input';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {zodResolver} from '@hookform/resolvers/zod';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
 import {Spinner} from '../components/ui/spinner';
@@ -30,6 +31,8 @@ export type SleepFormValues = z.infer<typeof sleepScaleSchema>;
 
 function SleepScale() {
   const user = useAuth();
+
+  const [editToday, setEditToday] = useState(false);
 
   const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
     useUserDailyEntries('sleep', user?.uid || '');
@@ -84,12 +87,21 @@ function SleepScale() {
 
   const {loading, submitForm} = useSubmitTrackingForm('sleep', user?.uid || '');
 
+  const onSubmit = (values: SleepFormValues) => {
+    submitForm(values);
+    setEditToday(false);
+  };
+
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />
       </div>
     );
+  }
+
+  if (hasTodayEntry && !editToday) {
+    return <SubmissionSuccess type="sleep" onEdit={() => setEditToday(true)} />;
   }
 
   return (
@@ -101,7 +113,7 @@ function SleepScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Question 1 */}
           <Card>
             <CardHeader>
