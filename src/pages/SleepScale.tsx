@@ -64,7 +64,7 @@ function SleepScale() {
 
   const {loading, submitForm} = useSubmitTrackingForm('sleep', user?.uid || '');
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />

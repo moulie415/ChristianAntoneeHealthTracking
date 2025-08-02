@@ -109,7 +109,7 @@ function PainScale() {
 
   const {loading, submitForm} = useSubmitTrackingForm('pain', user?.uid || '');
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />

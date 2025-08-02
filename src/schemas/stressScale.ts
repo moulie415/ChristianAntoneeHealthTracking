@@ -1,12 +1,43 @@
 import {z} from 'zod';
 
+export const StressTriggerEnum = z.enum([
+  'pain',
+  'sleep',
+  'work',
+  'family',
+  'money',
+  'no_time',
+  'movement',
+  'stuck',
+]);
+
+export const StressLocationEnum = z.enum([
+  'neck',
+  'lower_back',
+  'jaw',
+  'chest',
+  'head',
+  'stomach',
+  'nowhere',
+]);
+
+export const StressHelperEnum = z.enum([
+  'breathing',
+  'movement',
+  'talking',
+  'music',
+  'nap',
+  'stretching',
+  'tea',
+  'screens_off',
+  'nothing_helped',
+]);
+
 export const stressSchema = z.object({
-  stressLevel: z.enum(['0', '2', '4', '6', '8', '10']),
-  stressTriggers: z
-    .array(z.string())
-    .min(1, 'Please select at least one stress trigger'),
-  stressLocation: z.array(z.string()),
-  stressHelpers: z.array(z.string()),
+  stressLevel: z.number().min(0).max(10),
+  stressTriggers: z.array(StressTriggerEnum),
+  stressLocation: z.array(StressLocationEnum),
+  stressHelpers: z.array(StressHelperEnum),
   otherTrigger: z.string().optional(),
   otherHelper: z.string().optional(),
   painImpact: z.enum([

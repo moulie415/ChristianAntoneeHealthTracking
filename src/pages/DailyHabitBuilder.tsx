@@ -43,7 +43,7 @@ export function DailyHabitBuilder() {
 
   console.log(entries, hasTodayEntry, isLoading, historicEntries);
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />

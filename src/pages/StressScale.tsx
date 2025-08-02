@@ -22,37 +22,46 @@ import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
 import {stressSchema} from '../schemas/stressScale';
 
 const triggerOptions = [
-  'Pain or flare-up',
-  'Poor sleep',
-  'Work demands',
-  'Family pressures',
-  'Money or bills',
-  'Lack of time for myself',
-  'Movement limitations',
-  'Feeling stuck / not making progress',
-];
+  {label: 'Pain or flare-up', value: 'pain'},
+  {label: 'Poor sleep', value: 'sleep'},
+  {label: 'Work demands', value: 'work'},
+  {label: 'Family pressures', value: 'family'},
+  {label: 'Money or bills', value: 'money'},
+  {label: 'Lack of time for myself', value: 'no_time'},
+  {label: 'Movement limitations', value: 'movement'},
+  {label: 'Feeling stuck / not making progress', value: 'stuck'},
+] as const;
 
 const stressLocationOptions = [
-  'Neck and shoulders',
-  'Lower back',
-  'Jaw or face',
-  'Chest / heart racing',
-  'Head (tension or foggy)',
-  'Stomach (gut upset, tightness)',
-  'Nowhere in particular',
-];
+  {label: 'Neck and shoulders', value: 'neck'},
+  {label: 'Lower back', value: 'lower_back'},
+  {label: 'Jaw or face', value: 'jaw'},
+  {label: 'Chest / heart racing', value: 'chest'},
+  {label: 'Head (tension or foggy)', value: 'head'},
+  {label: 'Stomach (gut upset, tightness)', value: 'stomach'},
+  {label: 'Nowhere in particular', value: 'nowhere'},
+] as const;
 
 const stressHelperOptions = [
-  'Breathing exercises',
-  'Gentle movement or walk',
-  'Talking to someone',
-  'Listening to music or reading',
-  'A short nap or rest',
-  'Stretching or mobility routine',
-  'Herbal tea or supplement',
-  'Turning off screens',
-  'Nothing helped today',
-];
+  {label: 'Breathing exercises', value: 'breathing'},
+  {label: 'Gentle movement or walk', value: 'movement'},
+  {label: 'Talking to someone', value: 'talking'},
+  {label: 'Listening to music or reading', value: 'music'},
+  {label: 'A short nap or rest', value: 'nap'},
+  {label: 'Stretching or mobility routine', value: 'stretching'},
+  {label: 'Herbal tea or supplement', value: 'tea'},
+  {label: 'Turning off screens', value: 'screens_off'},
+  {label: 'Nothing helped today', value: 'nothing_helped'},
+] as const;
+
+const stressLevelOptions = [
+  {label: '😌 0 – None: Calm and in control', value: 0},
+  {label: '🙂 2 – Mild: A little tense', value: 2},
+  {label: '😐 4 – Moderate: Waves of stress', value: 4},
+  {label: '😟 6 – High: Overwhelmed most of the day', value: 6},
+  {label: '😣 8 – Very High: Constantly reactive', value: 8},
+  {label: '😫 10 – Maxed Out: Exhausted or drained', value: 10},
+] as const;
 
 export type StressFormValues = z.infer<typeof stressSchema>;
 
@@ -83,7 +92,7 @@ function StressScale() {
     user?.uid || '',
   );
 
-  if (loading) {
+  if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />
@@ -115,43 +124,17 @@ function StressScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        onValueChange={val => field.onChange(Number(val))}
+                        value={String(field.value)}
                         className="space-y-2">
-                        <FormItem key="0" className="flex items-center gap-3">
-                          <RadioGroupItem value="0" />
-                          <Label htmlFor="0">
-                            😌 0 – None: Calm and in control
-                          </Label>
-                        </FormItem>
-                        <FormItem key="2" className="flex items-center gap-3">
-                          <RadioGroupItem value="2" />
-                          <Label htmlFor="2">🙂 2 – Mild: A little tense</Label>
-                        </FormItem>
-                        <FormItem key="4" className="flex items-center gap-3">
-                          <RadioGroupItem value="4" />
-                          <Label htmlFor="4">
-                            😐 4 – Moderate: Waves of stress
-                          </Label>
-                        </FormItem>
-                        <FormItem key="6" className="flex items-center gap-3">
-                          <RadioGroupItem value="6" />
-                          <Label htmlFor="6">
-                            😟 6 – High: Overwhelmed most of the day
-                          </Label>
-                        </FormItem>
-                        <FormItem key="8" className="flex items-center gap-3">
-                          <RadioGroupItem value="8" />
-                          <Label htmlFor="8">
-                            😣 8 – Very High: Constantly reactive
-                          </Label>
-                        </FormItem>
-                        <FormItem key="10" className="flex items-center gap-3">
-                          <RadioGroupItem value="10" />
-                          <Label htmlFor="10">
-                            😫 10 – Maxed Out: Exhausted or drained
-                          </Label>
-                        </FormItem>
+                        {stressLevelOptions.map(({label, value}) => (
+                          <FormItem
+                            key={value}
+                            className="flex items-center gap-3">
+                            <RadioGroupItem value={String(value)} />
+                            <Label>{label}</Label>
+                          </FormItem>
+                        ))}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -175,31 +158,26 @@ function StressScale() {
                 render={() => (
                   <FormItem>
                     <div className="grid grid-cols-1 gap-2">
-                      {triggerOptions.map(option => (
+                      {triggerOptions.map(({label, value}) => (
                         <FormField
-                          key={option}
+                          key={value}
                           control={form.control}
                           name="stressTriggers"
                           render={({field}) => (
-                            <FormItem
-                              key={option}
-                              className="flex flex-row items-center space-x-3 space-y-0">
+                            <FormItem className="flex items-center space-x-3">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(option)}
+                                  checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
-                                    return checked
-                                      ? field.onChange([...field.value, option])
-                                      : field.onChange(
-                                          field.value.filter(
-                                            val => val !== option,
-                                          ),
-                                        );
+                                    const newValue = checked
+                                      ? [...field.value, value]
+                                      : field.value.filter(v => v !== value);
+                                    field.onChange(newValue);
                                   }}
                                 />
                               </FormControl>
                               <FormLabel className="font-normal">
-                                {option}
+                                {label}
                               </FormLabel>
                             </FormItem>
                           )}
@@ -237,29 +215,26 @@ function StressScale() {
                 render={() => (
                   <FormItem>
                     <div className="grid grid-cols-1 gap-2">
-                      {stressLocationOptions.map(option => (
+                      {stressLocationOptions.map(({label, value}) => (
                         <FormField
-                          key={option}
+                          key={value}
                           control={form.control}
                           name="stressLocation"
                           render={({field}) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(option)}
-                                  onCheckedChange={checked =>
-                                    checked
-                                      ? field.onChange([...field.value, option])
-                                      : field.onChange(
-                                          field.value.filter(
-                                            val => val !== option,
-                                          ),
-                                        )
-                                  }
+                                  checked={field.value?.includes(value)}
+                                  onCheckedChange={checked => {
+                                    const newValue = checked
+                                      ? [...field.value, value]
+                                      : field.value.filter(v => v !== value);
+                                    field.onChange(newValue);
+                                  }}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal">
-                                {option}
+                              <FormLabel className="text-sm font-normal">
+                                {label}
                               </FormLabel>
                             </FormItem>
                           )}
@@ -286,29 +261,26 @@ function StressScale() {
                 render={() => (
                   <FormItem>
                     <div className="grid grid-cols-1 gap-2">
-                      {stressHelperOptions.map(option => (
+                      {stressHelperOptions.map(({label, value}) => (
                         <FormField
-                          key={option}
+                          key={value}
                           control={form.control}
                           name="stressHelpers"
                           render={({field}) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0">
+                            <FormItem className="flex flex-row items-start space-x-3 space-y-0">
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(option)}
-                                  onCheckedChange={checked =>
-                                    checked
-                                      ? field.onChange([...field.value, option])
-                                      : field.onChange(
-                                          field.value.filter(
-                                            val => val !== option,
-                                          ),
-                                        )
-                                  }
+                                  checked={field.value?.includes(value)}
+                                  onCheckedChange={checked => {
+                                    const newValue = checked
+                                      ? [...field.value, value]
+                                      : field.value.filter(v => v !== value);
+                                    field.onChange(newValue);
+                                  }}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal">
-                                {option}
+                              <FormLabel className="text-sm font-normal">
+                                {label}
                               </FormLabel>
                             </FormItem>
                           )}
