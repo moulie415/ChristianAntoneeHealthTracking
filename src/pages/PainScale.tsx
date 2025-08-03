@@ -83,8 +83,10 @@ export type PainScaleValues = z.infer<typeof painScaleSchema>;
 function PainScale() {
   const user = useAuth();
 
-  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
-    useUserDailyEntries('pain', user?.uid || '');
+  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
+    'pain',
+    user?.uid || '',
+  );
 
   const [editToday, setEditToday] = useState(false);
 

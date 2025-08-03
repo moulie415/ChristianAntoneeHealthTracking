@@ -89,8 +89,10 @@ function StressScale() {
 
   const [editToday, setEditToday] = useState(false);
 
-  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
-    useUserDailyEntries('stress', user?.uid || '');
+  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
+    'stress',
+    user?.uid || '',
+  );
 
   const form = useForm<StressFormValues>({
     resolver: zodResolver(stressSchema),

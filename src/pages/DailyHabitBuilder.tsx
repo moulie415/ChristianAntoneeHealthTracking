@@ -42,8 +42,10 @@ export function DailyHabitBuilder() {
 
   const {loading, submitForm} = useSubmitTrackingForm('habit', user?.uid || '');
 
-  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
-    useUserDailyEntries('habit', user?.uid || '');
+  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
+    'habit',
+    user?.uid || '',
+  );
 
   useEffect(() => {
     if (todayEntry?.form) {

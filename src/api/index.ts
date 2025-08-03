@@ -53,9 +53,7 @@ export const getDailyEntries = async (
     where('updatedAt', '>=', date),
     orderBy('updatedAt', 'desc'),
   );
-  console.log('test 1');
   const snapshot = await getDocs(q);
-  console.log('test 2');
 
   return snapshot.docs;
 };

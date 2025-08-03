@@ -34,10 +34,10 @@ function SleepScale() {
 
   const [editToday, setEditToday] = useState(false);
 
-  const {isLoading, todayEntry, hasTodayEntry, entries, historicEntries} =
-    useUserDailyEntries('sleep', user?.uid || '');
-
-  console.log(entries);
+  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
+    'sleep',
+    user?.uid || '',
+  );
 
   const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
