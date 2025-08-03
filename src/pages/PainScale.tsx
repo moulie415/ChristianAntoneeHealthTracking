@@ -374,7 +374,9 @@ function PainScale() {
                   </FormItem>
                 )}
               />
-              <FormLabel>Additional Note (optional)</FormLabel>
+              <FormLabel className="mt-5 mb-2">
+                Additional Note (optional)
+              </FormLabel>
               <FormField
                 control={control}
                 name="emotionalState.note"
