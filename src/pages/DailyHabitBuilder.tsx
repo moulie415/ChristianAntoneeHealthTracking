@@ -14,6 +14,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import DailyEntryList from '../components/FormHistory';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Spinner} from '../components/ui/spinner';
 import {useAuth} from '../context/AuthContext';
@@ -42,10 +43,8 @@ export function DailyHabitBuilder() {
 
   const {loading, submitForm} = useSubmitTrackingForm('habit', user?.uid || '');
 
-  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
-    'habit',
-    user?.uid || '',
-  );
+  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
+    useUserDailyEntries('habit', user?.uid || '');
 
   useEffect(() => {
     if (todayEntry?.form) {
@@ -67,7 +66,12 @@ export function DailyHabitBuilder() {
   }
 
   if (hasTodayEntry && !editToday) {
-    return <SubmissionSuccess type="habit" onEdit={() => setEditToday(true)} />;
+    return (
+      <>
+        <SubmissionSuccess type="habit" onEdit={() => setEditToday(true)} />
+        <DailyEntryList entries={historicEntries} />
+      </>
+    );
   }
 
   type Option = boolean | 'no_need_to';
@@ -218,6 +222,7 @@ export function DailyHabitBuilder() {
             options={[true, false]}
             notePlaceholder="How did it feel on your back?"
           />
+
           <Button type="submit" className="w-full">
             Submit
           </Button>

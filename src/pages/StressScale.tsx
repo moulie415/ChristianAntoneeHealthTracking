@@ -14,6 +14,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import DailyEntryList from '../components/FormHistory';
 import {Section} from '../components/Section';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
@@ -82,6 +83,15 @@ const reflectionFeelingOptions = [
   {label: '😣 Feeling worse', value: 'worse'},
 ];
 
+export const allStressOptions = [
+  ...reflectionFeelingOptions,
+  ...painImpactOptions,
+  ...stressLevelOptions,
+  ...stressHelperOptions,
+  ...stressLocationOptions,
+  ...triggerOptions,
+];
+
 export type StressFormValues = z.infer<typeof stressSchema>;
 
 function StressScale() {
@@ -89,10 +99,8 @@ function StressScale() {
 
   const [editToday, setEditToday] = useState(false);
 
-  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
-    'stress',
-    user?.uid || '',
-  );
+  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
+    useUserDailyEntries('stress', user?.uid || '');
 
   const form = useForm<StressFormValues>({
     resolver: zodResolver(stressSchema),
@@ -134,7 +142,10 @@ function StressScale() {
 
   if (hasTodayEntry && !editToday) {
     return (
-      <SubmissionSuccess type="stress" onEdit={() => setEditToday(true)} />
+      <>
+        <SubmissionSuccess type="stress" onEdit={() => setEditToday(true)} />
+        <DailyEntryList entries={historicEntries} />
+      </>
     );
   }
 

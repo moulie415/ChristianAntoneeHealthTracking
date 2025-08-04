@@ -10,6 +10,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import DailyEntryList from '../components/FormHistory';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Button} from '../components/ui/button';
 import {Checkbox} from '../components/ui/checkbox';
@@ -78,15 +79,21 @@ const moodOptions: Option<z.infer<typeof MoodEnum>>[] = [
   {label: '😢 Helpless', value: 'helpless'},
 ];
 
+export const allPainOptions = [
+  ...moodOptions,
+  ...relieveOptions,
+  ...worsenOptions,
+  ...painTypeOptions,
+  ...painLocationOptions,
+];
+
 export type PainScaleValues = z.infer<typeof painScaleSchema>;
 
 function PainScale() {
   const user = useAuth();
 
-  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
-    'pain',
-    user?.uid || '',
-  );
+  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
+    useUserDailyEntries('pain', user?.uid || '');
 
   const [editToday, setEditToday] = useState(false);
 
@@ -133,7 +140,12 @@ function PainScale() {
   }
 
   if (hasTodayEntry && !editToday) {
-    return <SubmissionSuccess type="pain" onEdit={() => setEditToday(true)} />;
+    return (
+      <>
+        <SubmissionSuccess type="pain" onEdit={() => setEditToday(true)} />
+        <DailyEntryList entries={historicEntries} />
+      </>
+    );
   }
 
   return (

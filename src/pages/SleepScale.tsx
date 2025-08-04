@@ -14,6 +14,7 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import DailyEntryList from '../components/FormHistory';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
@@ -29,15 +30,46 @@ import {
 
 export type SleepFormValues = z.infer<typeof sleepScaleSchema>;
 
+const disruptionOptions: {
+  label: string;
+  value: z.infer<typeof DisruptionEnum>;
+}[] = [
+  {label: 'Back or nerve pain', value: 'back_pain'},
+  {label: 'Hip discomfort', value: 'hip_discomfort'},
+  {
+    label: 'Couldn’t find a comfortable position',
+    value: 'uncomfortable_position',
+  },
+  {label: 'Racing thoughts or stress', value: 'racing_thoughts'},
+  {label: 'Bathroom trips', value: 'bathroom_trips'},
+  {label: 'Noise or light in the room', value: 'noise_or_light'},
+  {label: 'Other', value: 'other'},
+];
+
+const helperOptions: {
+  label: string;
+  value: z.infer<typeof HelperEnum>;
+}[] = [
+  {label: 'Side sleeping with pillow support', value: 'side_sleeping'},
+  {label: 'Heat pad or warm bath before bed', value: 'heat_pad'},
+  {label: 'Sleeping pills', value: 'sleeping_pills'},
+  {label: 'Relaxing breathwork or meditation', value: 'breathwork'},
+  {label: 'Avoided screens before bed', value: 'no_screens'},
+  {label: 'Herbal tea or supplement', value: 'herbal_tea'},
+  {label: 'White noise or blackout curtains', value: 'white_noise'},
+  {label: 'Gentle stretching or mobility', value: 'stretching'},
+  {label: 'Other', value: 'other'},
+];
+
+export const allSleepOptions = [...helperOptions, ...disruptionOptions];
+
 function SleepScale() {
   const user = useAuth();
 
   const [editToday, setEditToday] = useState(false);
 
-  const {isLoading, todayEntry, hasTodayEntry} = useUserDailyEntries(
-    'sleep',
-    user?.uid || '',
-  );
+  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
+    useUserDailyEntries('sleep', user?.uid || '');
 
   const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
@@ -53,37 +85,6 @@ function SleepScale() {
       form.reset(todayEntry?.form as SleepFormValues);
     }
   }, [todayEntry?.form, form]);
-
-  const disruptionOptions: {
-    label: string;
-    value: z.infer<typeof DisruptionEnum>;
-  }[] = [
-    {label: 'Back or nerve pain', value: 'back_pain'},
-    {label: 'Hip discomfort', value: 'hip_discomfort'},
-    {
-      label: 'Couldn’t find a comfortable position',
-      value: 'uncomfortable_position',
-    },
-    {label: 'Racing thoughts or stress', value: 'racing_thoughts'},
-    {label: 'Bathroom trips', value: 'bathroom_trips'},
-    {label: 'Noise or light in the room', value: 'noise_or_light'},
-    {label: 'Other', value: 'other'},
-  ];
-
-  const helperOptions: {
-    label: string;
-    value: z.infer<typeof HelperEnum>;
-  }[] = [
-    {label: 'Side sleeping with pillow support', value: 'side_sleeping'},
-    {label: 'Heat pad or warm bath before bed', value: 'heat_pad'},
-    {label: 'Sleeping pills', value: 'sleeping_pills'},
-    {label: 'Relaxing breathwork or meditation', value: 'breathwork'},
-    {label: 'Avoided screens before bed', value: 'no_screens'},
-    {label: 'Herbal tea or supplement', value: 'herbal_tea'},
-    {label: 'White noise or blackout curtains', value: 'white_noise'},
-    {label: 'Gentle stretching or mobility', value: 'stretching'},
-    {label: 'Other', value: 'other'},
-  ];
 
   const {loading, submitForm} = useSubmitTrackingForm('sleep', user?.uid || '');
 
@@ -101,7 +102,12 @@ function SleepScale() {
   }
 
   if (hasTodayEntry && !editToday) {
-    return <SubmissionSuccess type="sleep" onEdit={() => setEditToday(true)} />;
+    return (
+      <>
+        <SubmissionSuccess type="sleep" onEdit={() => setEditToday(true)} />
+        <DailyEntryList entries={historicEntries} />
+      </>
+    );
   }
 
   return (

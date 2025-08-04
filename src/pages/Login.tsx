@@ -76,7 +76,7 @@ export default function Login() {
       <div className="space-y-2 text-center">
         <h1 className="text-3xl font-bold">Login</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Enter your email or username below to login to your account
+          Enter your email or username below to login to your CA Health account
         </p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
