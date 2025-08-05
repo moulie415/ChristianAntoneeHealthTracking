@@ -53,9 +53,11 @@ export const MentalStateEnum = z.enum([
 
 export const sleepScaleSchema = z.object({
   sleepQuality: SleepQualityEnum,
-  disruptions: z.array(DisruptionEnum).optional(),
+  disruptions: z
+    .array(DisruptionEnum)
+    .min(1, 'Please select at least one option'),
   otherDisruption: z.string().optional(),
-  helpers: z.array(HelperEnum).optional(),
+  helpers: z.array(HelperEnum).min(1, 'Please select at least one option'),
   otherHelper: z.string().optional(),
   wakeFeeling: WakeFeelingEnum,
   sleepDuration: SleepDurationEnum,

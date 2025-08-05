@@ -43,10 +43,11 @@ export const MoodEnum = z.enum([
 
 // Schema using enums
 export const painScaleSchema = z.object({
-  painLocations: z.array(PainLocationEnum),
+  painLocations: z
+    .array(PainLocationEnum)
+    .min(1, 'Please select at least one option'),
   painIntensity: z.number().int().min(0).max(10),
-  painTypes: z.array(PainTypeEnum),
-
+  painTypes: z.array(PainTypeEnum).min(1, 'Please select at least one option'),
   painWorsenedBy: z
     .object({
       reasons: z.array(WorsenEnum),
@@ -54,9 +55,21 @@ export const painScaleSchema = z.object({
     })
     .refine(
       data =>
+        data.reasons.length > 0 ||
+        (data.otherReason && data.otherReason.trim() !== ''),
+      {
+        message: 'Please select at least one option',
+        path: ['reasons'],
+      },
+    )
+    .refine(
+      data =>
         !data.reasons.includes('other') ||
         (data.otherReason && data.otherReason.trim() !== ''),
-      {message: 'Please specify the other reason', path: ['otherReason']},
+      {
+        message: 'Please specify the other reason',
+        path: ['otherReason'],
+      },
     ),
 
   painRelievedBy: z
@@ -66,9 +79,21 @@ export const painScaleSchema = z.object({
     })
     .refine(
       data =>
+        data.methods.length > 0 ||
+        (data.otherMethod && data.otherMethod.trim() !== ''),
+      {
+        message: 'Please select at least one option',
+        path: ['methods'],
+      },
+    )
+    .refine(
+      data =>
         !data.methods.includes('other') ||
         (data.otherMethod && data.otherMethod.trim() !== ''),
-      {message: 'Please specify the other method', path: ['otherMethod']},
+      {
+        message: 'Please specify the other method',
+        path: ['otherMethod'],
+      },
     ),
 
   emotionalState: z.object({

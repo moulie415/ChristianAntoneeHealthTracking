@@ -106,8 +106,8 @@ function PainScale() {
       painLocations: [],
       painIntensity: 0,
       painTypes: [],
-      painWorsenedBy: {reasons: []},
-      painRelievedBy: {methods: []},
+      painWorsenedBy: {reasons: [], otherReason: ''},
+      painRelievedBy: {methods: [], otherMethod: ''},
       smallWin: '',
     },
   });
@@ -127,6 +127,7 @@ function PainScale() {
   const {loading, submitForm} = useSubmitTrackingForm('pain', user?.uid || '');
 
   const onSubmit = (values: PainScaleValues) => {
+    console.log(values);
     submitForm(values);
     setEditToday(false);
   };

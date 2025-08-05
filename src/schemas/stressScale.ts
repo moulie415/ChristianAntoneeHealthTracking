@@ -35,9 +35,15 @@ export const StressHelperEnum = z.enum([
 
 export const stressSchema = z.object({
   stressLevel: z.number().min(0).max(10),
-  stressTriggers: z.array(StressTriggerEnum),
-  stressLocation: z.array(StressLocationEnum),
-  stressHelpers: z.array(StressHelperEnum),
+  stressTriggers: z
+    .array(StressTriggerEnum)
+    .min(1, 'Please select at least one option'),
+  stressLocation: z
+    .array(StressLocationEnum)
+    .min(1, 'Please select at least one option'),
+  stressHelpers: z
+    .array(StressHelperEnum)
+    .min(1, 'Please select at least one option'),
   otherTrigger: z.string().optional(),
   otherHelper: z.string().optional(),
   painImpact: z.enum([
