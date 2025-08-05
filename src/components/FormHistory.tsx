@@ -60,6 +60,18 @@ const getAnswerMapping = (
   }
 };
 
+const flattenValues = (input: unknown): string[] => {
+  if (Array.isArray(input)) {
+    return input.flatMap(flattenValues);
+  }
+
+  if (typeof input === 'object' && input !== null) {
+    return Object.values(input).flatMap(flattenValues);
+  }
+
+  return typeof input === 'string' && input.trim() !== '' ? [input] : [];
+};
+
 export default function DailyEntryList({entries}: Props) {
   return (
     <div className="space-y-4 px-4 sm:px-0">
@@ -83,28 +95,23 @@ export default function DailyEntryList({entries}: Props) {
             <Separator className="my-3" />
 
             <div className="space-y-2">
-              {Object.entries(entry.form).map(([question, answer]) => (
-                <div key={question}>
-                  <p className="text-sm font-medium text-foreground">
-                    {getQuestionMapping(question)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {Array.isArray(answer)
-                      ? answer
-                          .filter(Boolean)
-                          .map(answer => getAnswerMapping(answer, entry.type))
-                          .join(', ')
-                      : typeof answer === 'object'
-                        ? Object.values(answer)
-                            .filter(Boolean)
-                            .map(answer =>
-                              getAnswerMapping(answer as string, entry.type),
-                            )
+              {Object.entries(entry.form).map(([question, answer]) => {
+                const flatValues = flattenValues(answer);
+                return (
+                  <div key={question}>
+                    <p className="text-sm font-medium text-foreground">
+                      {getQuestionMapping(question)}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {flatValues.length > 0
+                        ? flatValues
+                            .map(value => getAnswerMapping(value, entry.type))
                             .join(', ')
-                        : getAnswerMapping(answer, entry.type)}
-                  </p>
-                </div>
-              ))}
+                        : 'None'}
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

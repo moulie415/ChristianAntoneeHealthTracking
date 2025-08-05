@@ -127,7 +127,6 @@ function PainScale() {
   const {loading, submitForm} = useSubmitTrackingForm('pain', user?.uid || '');
 
   const onSubmit = (values: PainScaleValues) => {
-    console.log(values);
     submitForm(values);
     setEditToday(false);
   };
