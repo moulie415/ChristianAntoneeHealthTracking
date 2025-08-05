@@ -25,7 +25,12 @@ import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
 import {
   DisruptionEnum,
   HelperEnum,
+  MentalStateEnum,
+  SleepDurationEnum,
+  SleepQualityEnum,
   sleepScaleSchema,
+  WakeFeelingEnum,
+  WakeFrequencyEnum,
 } from '../schemas/sleepScale';
 
 export type SleepFormValues = z.infer<typeof sleepScaleSchema>;
@@ -61,7 +66,149 @@ const helperOptions: {
   {label: 'Other', value: 'other'},
 ];
 
-export const allSleepOptions = [...helperOptions, ...disruptionOptions];
+const sleepQualityOptions: {
+  label: string;
+  value: z.infer<typeof SleepQualityEnum>;
+}[] = [
+  {
+    value: 'terrible',
+    label: '😩 Terrible: I barely slept at all.',
+  },
+  {
+    value: 'very_poor',
+    label: '😖 Very Poor: Constantly waking, pain was unbearable.',
+  },
+  {
+    value: 'poor',
+    label: '😕 Poor: Broken sleep, couldn’t get comfortable.',
+  },
+  {
+    value: 'fair',
+    label: '😐 Fair: A few wake-ups, not terrible..',
+  },
+  {
+    value: 'good',
+    label: '🙂 Good: Slept fairly well, some minor disturbances.',
+  },
+  {
+    value: 'excellent',
+    label: '😴 Excellent: Deep, refreshing sleep with no issues',
+  },
+];
+
+const wakeFeelingOptions: {
+  label: string;
+  value: z.infer<typeof WakeFeelingEnum>;
+}[] = [
+  {
+    value: 'energized',
+    label: '😄 Energized',
+  },
+  {
+    value: 'calm',
+    label: '🙂 Calm',
+  },
+  {
+    value: 'neutral',
+    label: '😐 Meh / Neutral',
+  },
+  {
+    value: 'groggy',
+    label: '😟 Groggy',
+  },
+  {
+    value: 'tired',
+    label: '😣 Tired and sore',
+  },
+];
+
+const sleepDurationOptions: {
+  label: string;
+  value: z.infer<typeof SleepDurationEnum>;
+}[] = [
+  {
+    value: '<4',
+    label: 'Less than 4',
+  },
+  {
+    value: '4–6',
+    label: '4–6',
+  },
+  {
+    value: '6–7',
+    label: '6–7',
+  },
+  {
+    value: '7–8',
+    label: '7–8',
+  },
+  {
+    value: '>8',
+    label: 'More than 8',
+  },
+];
+
+const wakeFrequencyOptions: {
+  label: string;
+  value: z.infer<typeof WakeFrequencyEnum>;
+}[] = [
+  {
+    value: '0',
+    label: 'None',
+  },
+  {
+    value: '1–2',
+    label: '1–2 times',
+  },
+  {
+    value: '3–4',
+    label: '3–4 times',
+  },
+  {
+    value: '>4',
+    label: 'More than 4',
+  },
+  {
+    value: 'countless',
+    label: 'I lost count',
+  },
+];
+
+const mentalStateOptions: {
+  label: string;
+  value: z.infer<typeof MentalStateEnum>;
+}[] = [
+  {
+    value: 'calm',
+    label: 'Calm and relaxed',
+  },
+  {
+    value: 'slightly_stressed',
+    label: 'Slightly stressed',
+  },
+  {
+    value: 'anxious',
+    label: 'Anxious or overwhelmed',
+  },
+  {
+    value: 'alert',
+    label: 'Alert / stimulated',
+  },
+  {
+    value: 'unknown',
+    label: 'Can’t remember',
+  },
+];
+
+export const allSleepOptions = [
+  ...helperOptions,
+  ...disruptionOptions,
+  ...sleepQualityOptions,
+  ...wakeFeelingOptions,
+  ...sleepDurationOptions,
+  ...wakeFrequencyOptions,
+  ...mentalStateOptions,
+];
 
 function SleepScale() {
   const user = useAuth();
@@ -136,50 +283,12 @@ function SleepScale() {
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
-                        <div key="terrible" className="flex items-center gap-3">
-                          <RadioGroupItem value="terrible" />
-                          <Label htmlFor="terrible">
-                            {'😩 Terrible: I barely slept at all.'}
-                          </Label>
-                        </div>
-                        <div key="veryPoor" className="flex items-center gap-3">
-                          <RadioGroupItem value="very_poor" />
-                          <Label htmlFor="veryPoor">
-                            {
-                              '😖 Very Poor: Constantly waking, pain was unbearable.'
-                            }
-                          </Label>
-                        </div>
-                        <div key="poor" className="flex items-center gap-3">
-                          <RadioGroupItem value="poor" />
-                          <Label htmlFor="poor">
-                            {'😕 Poor: Broken sleep, couldn’t get comfortable.'}
-                          </Label>
-                        </div>
-                        <div key="fair" className="flex items-center gap-3">
-                          <RadioGroupItem value="fair" />
-                          <Label htmlFor="fair">
-                            {'😐 Fair: A few wake-ups, not terrible..'}
-                          </Label>
-                        </div>
-                        <div key="good" className="flex items-center gap-3">
-                          <RadioGroupItem value="good" />
-                          <Label htmlFor="good">
-                            {
-                              '🙂 Good: Slept fairly well, some minor disturbances.'
-                            }
-                          </Label>
-                        </div>
-                        <div
-                          key="excellent"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="excellent" />
-                          <Label htmlFor="excellent">
-                            {
-                              '😴 Excellent: Deep, refreshing sleep with no issues'
-                            }
-                          </Label>
-                        </div>
+                        {sleepQualityOptions.map(({value, label}) => (
+                          <div key={value} className="flex items-center gap-3">
+                            <RadioGroupItem value={value} />
+                            <Label htmlFor={value}>{label}</Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -339,28 +448,12 @@ function SleepScale() {
                         onValueChange={field.onChange}
                         value={field.value}
                         className="flex flex-col space-y-1">
-                        <div
-                          key="energized"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="energized" />
-                          <Label htmlFor="energized">{'😄 Energized'}</Label>
-                        </div>
-                        <div key="calm" className="flex items-center gap-3">
-                          <RadioGroupItem value="calm" />
-                          <Label htmlFor="calm">{'🙂 Calm'}</Label>
-                        </div>
-                        <div key="neutral" className="flex items-center gap-3">
-                          <RadioGroupItem value="neutral" />
-                          <Label htmlFor="neutral">{'😐 Meh / Neutral'}</Label>
-                        </div>
-                        <div key="groggy" className="flex items-center gap-3">
-                          <RadioGroupItem value="groggy" />
-                          <Label htmlFor="groggy">{'😟 Groggy'}</Label>
-                        </div>
-                        <div key="tired" className="flex items-center gap-3">
-                          <RadioGroupItem value="tired" />
-                          <Label htmlFor="tired">{'😣 Tired and sore'}</Label>
-                        </div>
+                        {wakeFeelingOptions.map(({value, label}) => (
+                          <div key={value} className="flex items-center gap-3">
+                            <RadioGroupItem value={value} />
+                            <Label htmlFor={value}>{label}</Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -386,30 +479,12 @@ function SleepScale() {
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
-                        <div key="lt4" className="flex items-center gap-3">
-                          <RadioGroupItem value="<4" />
-                          <Label htmlFor="<4">{'Less than 4'}</Label>
-                        </div>
-
-                        <div key="4-6" className="flex items-center gap-3">
-                          <RadioGroupItem value="4–6" />
-                          <Label htmlFor="4–6">{'4–6'}</Label>
-                        </div>
-
-                        <div key="6-7" className="flex items-center gap-3">
-                          <RadioGroupItem value="6–7" />
-                          <Label htmlFor="6–7">{'6–7'}</Label>
-                        </div>
-
-                        <div key="7-8" className="flex items-center gap-3">
-                          <RadioGroupItem value="7–8" />
-                          <Label htmlFor="7–8">{'7–8'}</Label>
-                        </div>
-
-                        <div key="gt8" className="flex items-center gap-3">
-                          <RadioGroupItem value=">8" />
-                          <Label htmlFor=">8">{'More than 8'}</Label>
-                        </div>
+                        {sleepDurationOptions.map(({value, label}) => (
+                          <div key={value} className="flex items-center gap-3">
+                            <RadioGroupItem value={value} />
+                            <Label htmlFor={value}>{label}</Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -437,28 +512,12 @@ function SleepScale() {
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
-                        <div key="0" className="flex items-center gap-3">
-                          <RadioGroupItem value="0" />
-                          <Label htmlFor="0">{'None'}</Label>
-                        </div>
-                        <div key="1-2" className="flex items-center gap-3">
-                          <RadioGroupItem value="1–2" />
-                          <Label htmlFor="1–2">{'1–2 times'}</Label>
-                        </div>
-                        <div key="3-4" className="flex items-center gap-3">
-                          <RadioGroupItem value="3–4" />
-                          <Label htmlFor="3–4">{'3–4 times'}</Label>
-                        </div>
-                        <div key="gt4" className="flex items-center gap-3">
-                          <RadioGroupItem value=">4" />
-                          <Label htmlFor=">4">{'More than 4'}</Label>
-                        </div>
-                        <div
-                          key="countless"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="countless" />
-                          <Label htmlFor="countless">{'I lost count'}</Label>
-                        </div>
+                        {wakeFrequencyOptions.map(({value, label}) => (
+                          <div key={value} className="flex items-center gap-3">
+                            <RadioGroupItem value={value} />
+                            <Label htmlFor={value}>{label}</Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
@@ -486,32 +545,12 @@ function SleepScale() {
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
-                        <div key="calm" className="flex items-center gap-3">
-                          <RadioGroupItem value="calm" />
-                          <Label htmlFor="calm">{'Calm and relaxed'}</Label>
-                        </div>
-                        <div
-                          key="slightlyStressed"
-                          className="flex items-center gap-3">
-                          <RadioGroupItem value="slightly_stressed" />
-                          <Label htmlFor="slightlyStressed">
-                            {'Slightly stressed'}
-                          </Label>
-                        </div>
-                        <div key="anxious" className="flex items-center gap-3">
-                          <RadioGroupItem value="anxious" />
-                          <Label htmlFor="anxious">
-                            {'Anxious or overwhelmed'}
-                          </Label>
-                        </div>
-                        <div key="alert" className="flex items-center gap-3">
-                          <RadioGroupItem value="alert" />
-                          <Label htmlFor="alert">{'Alert / stimulated'}</Label>
-                        </div>
-                        <div key="unknown" className="flex items-center gap-3">
-                          <RadioGroupItem value="unknown" />
-                          <Label htmlFor="unknown">{'Can’t remember'}</Label>
-                        </div>
+                        {mentalStateOptions.map(({value, label}) => (
+                          <div key={value} className="flex items-center gap-3">
+                            <RadioGroupItem value={value} />
+                            <Label htmlFor={value}>{label}</Label>
+                          </div>
+                        ))}
                       </RadioGroup>
                     </FormControl>
                     <FormMessage />
