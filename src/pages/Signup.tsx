@@ -3,7 +3,8 @@ import {
   FacebookAuthProvider,
   GoogleAuthProvider,
   OAuthProvider,
-  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
   signInWithPopup,
 } from 'firebase/auth';
 import {useState} from 'react';
@@ -23,14 +24,45 @@ const appleProvider = new OAuthProvider('apple.com');
 type Inputs = {
   email: string;
   password: string;
+  confirmPassword: string;
 };
 
-export default function Login() {
-  const location = useLocation();
+export default function Signup() {
   const navigate = useNavigate();
+  const location = useLocation();
   const from = location.state?.from?.pathname || '/';
 
   const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: {errors},
+  } = useForm<Inputs>();
+
+  const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
+    try {
+      setLoading(true);
+      const {user} = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      if (!user.emailVerified) {
+        await sendEmailVerification(user);
+      }
+      toast.success(
+        `Sign-up successful!${user.emailVerified ? '' : ' Please check your email to verify your account.'}`,
+      );
+      navigate(from, {replace: true});
+    } catch (e) {
+      if (e instanceof FirebaseError) {
+        toast.error(`Error: ${e.code}`);
+      }
+    }
+    setLoading(false);
+  };
 
   const googleSignIn = async () => {
     try {
@@ -71,20 +103,7 @@ export default function Login() {
     setLoading(false);
   };
 
-  const {register, handleSubmit} = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
-    try {
-      setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
-
-      navigate(from, {replace: true});
-    } catch (e) {
-      if (e instanceof FirebaseError) {
-        toast.error(`Error: ${e.code}`);
-      }
-    }
-    setLoading(false);
-  };
+  const password = watch('password');
 
   if (loading) {
     return (
@@ -97,9 +116,9 @@ export default function Login() {
   return (
     <div className="max-w-sm space-y-6 m-5 sm:mx-auto">
       <div className="space-y-2 text-center">
-        <h1 className="text-3xl font-bold">Login</h1>
+        <h1 className="text-3xl font-bold">Create Account</h1>
         <p className="text-gray-500 dark:text-gray-400">
-          Enter your email below to login to your CA Health account
+          Sign up with your email or use a social provider below.
         </p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -108,7 +127,7 @@ export default function Login() {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              type="text"
+              type="email"
               placeholder="m@example.com"
               required
               {...register('email')}
@@ -123,13 +142,30 @@ export default function Login() {
               {...register('password')}
             />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              required
+              {...register('confirmPassword', {
+                validate: value =>
+                  value === password || 'Passwords do not match',
+              })}
+            />
+            {errors.confirmPassword && (
+              <p className="text-sm text-red-600">
+                {errors.confirmPassword.message}
+              </p>
+            )}
+          </div>
           <Button type="submit" className="w-full">
-            Login
+            Sign Up
           </Button>
-          <p className="text-sm text-center text-gray-500 dark:text-gray-400 mt-1">
-            Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-600 hover:underline">
-              Sign up
+          <p className="text-sm text-center text-gray-500 dark:text-gray-400 mt-2">
+            Already have an account?{' '}
+            <Link to="/login" className="text-blue-600 hover:underline">
+              Log in
             </Link>
           </p>
         </div>
@@ -157,19 +193,16 @@ export default function Login() {
   );
 }
 
+// --- ICONS ---
+
 function AppleIcon(props: {className: string}) {
   return (
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
+      viewBox="0 0 24 24"
+      stroke="currentColor">
       <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" />
       <path d="M10 2c1 .5 2 2 2 5" />
     </svg>
@@ -181,14 +214,9 @@ function ChromeIcon(props: {className: string}) {
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
+      viewBox="0 0 24 24"
+      stroke="currentColor">
       <circle cx="12" cy="12" r="10" />
       <circle cx="12" cy="12" r="4" />
       <line x1="21.17" x2="12" y1="8" y2="8" />
@@ -203,14 +231,9 @@ function FacebookIcon(props: {className: string}) {
     <svg
       {...props}
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round">
+      viewBox="0 0 24 24"
+      stroke="currentColor">
       <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
     </svg>
   );

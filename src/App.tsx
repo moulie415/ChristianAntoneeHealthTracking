@@ -16,6 +16,7 @@ import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PainScale from './pages/PainScale';
+import Signup from './pages/SignUp';
 import SleepScale from './pages/SleepScale';
 import StressScale from './pages/StressScale';
 
@@ -33,6 +34,14 @@ const router = createBrowserRouter([
         element: (
           <RedirectIfAuthenticated>
             <Login />
+          </RedirectIfAuthenticated>
+        ),
+      },
+      {
+        path: 'signup',
+        element: (
+          <RedirectIfAuthenticated>
+            <Signup />
           </RedirectIfAuthenticated>
         ),
       },

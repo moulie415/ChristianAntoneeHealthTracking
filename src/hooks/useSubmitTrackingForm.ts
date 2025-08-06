@@ -14,7 +14,9 @@ const useSubmitTrackingForm = (type: FormType, uid: string) => {
       });
     },
     onError: () => {
-      toast.error('Error submitting form');
+      toast.error(
+        'Error submitting form, please make sure you have verified your email',
+      );
     },
   });
 
