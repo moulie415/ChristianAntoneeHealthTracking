@@ -11,9 +11,11 @@ import {
 import {Input} from '@/components/ui/input';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {zodResolver} from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import type {FormEntry} from '../api';
 import DailyEntryList from '../components/FormHistory';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
@@ -215,6 +217,13 @@ function SleepScale() {
 
   const [editToday, setEditToday] = useState(false);
 
+  const [historical, setHistorical] = useState<FormEntry>();
+
+  const onViewHistorical = (entry: FormEntry) => {
+    setHistorical(entry);
+    form.reset(entry.form as SleepFormValues);
+  };
+
   const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
     useUserDailyEntries('sleep', user?.uid || '');
 
@@ -248,18 +257,28 @@ function SleepScale() {
     );
   }
 
-  if (hasTodayEntry && !editToday) {
+  if (hasTodayEntry && !editToday && !historical) {
     return (
       <>
         <SubmissionSuccess type="sleep" onEdit={() => setEditToday(true)} />
-        <DailyEntryList entries={historicEntries} />
+        <DailyEntryList
+          entries={historicEntries}
+          onViewHistorical={onViewHistorical}
+        />
       </>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h2 className="text-2xl font-bold mb-2">Daily Sleep Check-In</h2>
+      <div className="flex flex-row justify-between">
+        <h2 className="text-2xl font-bold mb-2">Daily Sleep Check-In</h2>
+        {!!historical && (
+          <h2 className="text-2xl font-bold mb-2">
+            {dayjs(historical.updatedAt).format('MMM D, YYYY')}
+          </h2>
+        )}
+      </div>
       <p className="mb-6 text-muted-foreground">
         How did you sleep last night? Tracking your rest can reveal patterns
         that help improve your recovery and energy day-to-day.
@@ -280,6 +299,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
+                        disabled={!!historical}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -321,6 +341,7 @@ function SleepScale() {
                               className="flex flex-row items-start space-y-1">
                               <FormControl>
                                 <Checkbox
+                                  disabled={!!historical}
                                   checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
                                     return checked
@@ -353,7 +374,11 @@ function SleepScale() {
                           <FormItem className="mt-2">
                             <FormLabel>Other disruption</FormLabel>
                             <FormControl>
-                              <Input placeholder="Describe..." {...field} />
+                              <Input
+                                disabled={!!historical}
+                                placeholder="Describe..."
+                                {...field}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -388,6 +413,7 @@ function SleepScale() {
                               className="flex flex-row items-start space-y-1">
                               <FormControl>
                                 <Checkbox
+                                  disabled={!!historical}
                                   checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
                                     return checked
@@ -420,7 +446,11 @@ function SleepScale() {
                           <FormItem className="mt-2">
                             <FormLabel>Other helper</FormLabel>
                             <FormControl>
-                              <Input placeholder="Describe..." {...field} />
+                              <Input
+                                disabled={!!historical}
+                                placeholder="Describe..."
+                                {...field}
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -445,6 +475,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
+                        disabled={!!historical}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="flex flex-col space-y-1">
@@ -476,6 +507,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
+                        disabled={!!historical}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -509,6 +541,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
+                        disabled={!!historical}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -542,6 +575,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
+                        disabled={!!historical}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -560,9 +594,27 @@ function SleepScale() {
             </CardContent>
           </Card>
           <div className="pt-4 flex justify-center">
-            <Button type="submit" className="w-full sm:w-auto">
-              Submit
-            </Button>
+            {editToday && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full sm:w-auto mr-5"
+                onClick={() => setEditToday(false)}>
+                Back
+              </Button>
+            )}
+            {!historical ? (
+              <Button type="submit" className="w-full sm:w-auto">
+                Submit
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setHistorical(undefined)}
+                type="button"
+                className="w-full sm:w-auto">
+                Back
+              </Button>
+            )}
           </div>
         </form>
       </Form>

@@ -7,9 +7,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import {zodResolver} from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import type {FormEntry} from '../api';
 import DailyEntryList from '../components/FormHistory';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Button} from '../components/ui/button';
@@ -97,6 +99,13 @@ function PainScale() {
 
   const [editToday, setEditToday] = useState(false);
 
+  const [historical, setHistorical] = useState<FormEntry>();
+
+  const onViewHistorical = (entry: FormEntry) => {
+    setHistorical(entry);
+    form.reset(entry.form as PainScaleValues);
+  };
+
   const form = useForm<PainScaleValues>({
     resolver: zodResolver(painScaleSchema),
     defaultValues: {
@@ -139,18 +148,28 @@ function PainScale() {
     );
   }
 
-  if (hasTodayEntry && !editToday) {
+  if (hasTodayEntry && !editToday && !historical) {
     return (
       <>
         <SubmissionSuccess type="pain" onEdit={() => setEditToday(true)} />
-        <DailyEntryList entries={historicEntries} />
+        <DailyEntryList
+          entries={historicEntries}
+          onViewHistorical={onViewHistorical}
+        />
       </>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h2 className="text-2xl font-bold mb-2">Daily Pain Check-In</h2>
+      <div className="flex flex-row justify-between">
+        <h2 className="text-2xl font-bold mb-2">Daily Pain Check-In</h2>
+        {!!historical && (
+          <h2 className="text-2xl font-bold mb-2">
+            {dayjs(historical.updatedAt).format('MMM D, YYYY')}
+          </h2>
+        )}
+      </div>
       <p className="mb-6 text-muted-foreground">
         Check off the habits you complete each day. It’s not about being perfect
         — it’s about building momentum and noticing what helps your body feel
@@ -176,6 +195,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
+                            disabled={!!historical}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -207,6 +227,7 @@ function PainScale() {
                 render={({field}) => (
                   <FormItem>
                     <Slider
+                      disabled={!!historical}
                       min={0}
                       max={10}
                       step={1}
@@ -237,6 +258,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
+                            disabled={!!historical}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -273,6 +295,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
+                            disabled={!!historical}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -291,7 +314,11 @@ function PainScale() {
                         name="painWorsenedBy.otherReason"
                         render={({field}) => (
                           <FormItem className="mt-2">
-                            <Input placeholder="Please specify..." {...field} />
+                            <Input
+                              disabled={!!historical}
+                              placeholder="Please specify..."
+                              {...field}
+                            />
                             <FormMessage />
                           </FormItem>
                         )}
@@ -321,6 +348,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
+                            disabled={!!historical}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -339,7 +367,11 @@ function PainScale() {
                         name="painRelievedBy.otherMethod"
                         render={({field}) => (
                           <FormItem className="mt-2">
-                            <Input placeholder="Please specify..." {...field} />
+                            <Input
+                              disabled={!!historical}
+                              placeholder="Please specify..."
+                              {...field}
+                            />
                             <FormMessage />
                           </FormItem>
                         )}
@@ -368,6 +400,7 @@ function PainScale() {
                     <RadioGroup
                       onValueChange={field.onChange}
                       value={field.value}
+                      disabled={!!historical}
                       className="flex flex-col space-y-1">
                       {moodOptions.map(opt => (
                         <div
@@ -394,7 +427,11 @@ function PainScale() {
                 name="emotionalState.note"
                 render={({field}) => (
                   <FormItem>
-                    <Textarea placeholder="Add a note..." {...field} />
+                    <Textarea
+                      disabled={!!historical}
+                      placeholder="Add a note..."
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -415,7 +452,11 @@ function PainScale() {
                 name="smallWin"
                 render={({field}) => (
                   <FormItem>
-                    <Input placeholder="I was able to..." {...field} />
+                    <Input
+                      disabled={!!historical}
+                      placeholder="I was able to..."
+                      {...field}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -424,9 +465,27 @@ function PainScale() {
           </Card>
 
           <div className="pt-4 flex justify-center">
-            <Button type="submit" className="w-full sm:w-auto">
-              Submit
-            </Button>
+            {editToday && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full sm:w-auto mr-5"
+                onClick={() => setEditToday(false)}>
+                Back
+              </Button>
+            )}
+            {!historical ? (
+              <Button type="submit" className="w-full sm:w-auto">
+                Submit
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setHistorical(undefined)}
+                type="button"
+                className="w-full sm:w-auto">
+                Back
+              </Button>
+            )}
           </div>
         </form>
       </Form>

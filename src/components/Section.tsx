@@ -19,9 +19,16 @@ type SectionProps = {
   name: string;
   radioOptions: Option[];
   control: any;
+  disabled?: boolean;
 };
 
-export function Section({title, name, radioOptions, control}: SectionProps) {
+export function Section({
+  title,
+  name,
+  radioOptions,
+  control,
+  disabled,
+}: SectionProps) {
   return (
     <Card>
       <CardHeader>
@@ -35,6 +42,7 @@ export function Section({title, name, radioOptions, control}: SectionProps) {
             <FormItem>
               <FormControl>
                 <RadioGroup
+                  disabled={disabled}
                   onValueChange={val => {
                     const value =
                       val === 'true' ? true : val === 'false' ? false : val;

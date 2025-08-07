@@ -11,9 +11,11 @@ import {
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {Textarea} from '@/components/ui/textarea';
 import {zodResolver} from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
+import type {FormEntry} from '../api';
 import DailyEntryList from '../components/FormHistory';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Spinner} from '../components/ui/spinner';
@@ -40,8 +42,14 @@ export function DailyHabitBuilder() {
   const user = useAuth();
 
   const [editToday, setEditToday] = useState(false);
+  const [historical, setHistorical] = useState<FormEntry>();
 
   const {loading, submitForm} = useSubmitTrackingForm('habit', user?.uid || '');
+
+  const onViewHistorical = (entry: FormEntry) => {
+    setHistorical(entry);
+    form.reset(entry.form as HabitFormValues);
+  };
 
   const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
     useUserDailyEntries('habit', user?.uid || '');
@@ -65,11 +73,14 @@ export function DailyHabitBuilder() {
     );
   }
 
-  if (hasTodayEntry && !editToday) {
+  if (hasTodayEntry && !editToday && !historical) {
     return (
       <>
         <SubmissionSuccess type="habit" onEdit={() => setEditToday(true)} />
-        <DailyEntryList entries={historicEntries} />
+        <DailyEntryList
+          entries={historicEntries}
+          onViewHistorical={onViewHistorical}
+        />
       </>
     );
   }
@@ -105,6 +116,7 @@ export function DailyHabitBuilder() {
                 <FormLabel className="font-semibold">{title}</FormLabel>
                 <FormControl>
                   <RadioGroup
+                    disabled={!!historical}
                     onValueChange={val => {
                       // Convert string back to proper type
                       if (val === 'true') {
@@ -148,6 +160,7 @@ export function DailyHabitBuilder() {
 
         <FormField
           control={form.control}
+          disabled={!!historical}
           name={noteName as any}
           render={({field}) => (
             <FormItem>
@@ -170,9 +183,16 @@ export function DailyHabitBuilder() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
-      <h2 className="text-2xl font-bold mb-2">
-        Daily Habit Builder for Back Pain Recovery
-      </h2>
+      <div className="flex flex-row justify-between">
+        <h2 className="text-2xl font-bold mb-2">
+          Daily Habit Builder for Back Pain Recovery
+        </h2>
+        {!!historical && (
+          <h2 className="text-2xl font-bold mb-2">
+            {dayjs(historical.updatedAt).format('MMM D, YYYY')}
+          </h2>
+        )}
+      </div>
       <p className="mb-6 text-muted-foreground">
         Check off the habits you complete each day. It’s not about being perfect
         — it’s about building momentum and noticing what helps your body feel
@@ -223,9 +243,29 @@ export function DailyHabitBuilder() {
             notePlaceholder="How did it feel on your back?"
           />
 
-          <Button type="submit" className="w-full">
-            Submit
-          </Button>
+          <div className="pt-4 flex justify-center">
+            {editToday && (
+              <Button
+                type="button"
+                variant="secondary"
+                className="w-full sm:w-auto mr-5"
+                onClick={() => setEditToday(false)}>
+                Back
+              </Button>
+            )}
+            {!historical ? (
+              <Button type="submit" className="w-full sm:w-auto">
+                Submit
+              </Button>
+            ) : (
+              <Button
+                onClick={() => setHistorical(undefined)}
+                type="button"
+                className="w-full sm:w-auto">
+                Back
+              </Button>
+            )}
+          </div>
         </form>
       </Form>
     </div>
