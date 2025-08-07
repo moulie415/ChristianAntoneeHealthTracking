@@ -16,7 +16,7 @@ import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PainScale from './pages/PainScale';
-import Signup from './pages/SignUp';
+import Signup from './pages/Signup';
 import SleepScale from './pages/SleepScale';
 import StressScale from './pages/StressScale';
 
