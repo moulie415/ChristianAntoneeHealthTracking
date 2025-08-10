@@ -70,8 +70,5 @@ export const getDailyEntry = async (
 ) => {
   const dailyEntryRef = doc(db, 'users', uid, 'dailyEntries', `${type}_${dayjs(day).format('YYYYMMDD')}`);
   const docSnap = await getDoc(dailyEntryRef);
-  if (!docSnap.exists()) {
-    throw Error("Couldn't find entry for that date")
-  }
   return docSnap;
 };

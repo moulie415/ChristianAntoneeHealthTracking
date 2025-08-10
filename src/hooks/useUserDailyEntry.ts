@@ -42,7 +42,6 @@ const useUserDailyEntry = (
     throw error
   }
 
-  console.log(date)
 
   if (date && !isValidYYYYMMDD(date)) {
     throw Error('Invalid date')
