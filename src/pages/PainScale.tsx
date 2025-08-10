@@ -8,12 +8,9 @@ import {
 } from '@/components/ui/form';
 import {zodResolver} from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-import type {FormEntry} from '../api';
-import DailyEntryList from '../components/FormHistory';
-import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Button} from '../components/ui/button';
 import {Checkbox} from '../components/ui/checkbox';
 import {Input} from '../components/ui/input';
@@ -24,7 +21,7 @@ import {Spinner} from '../components/ui/spinner';
 import {Textarea} from '../components/ui/textarea';
 import {useAuth} from '../context/AuthContext';
 import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
-import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
+import useUserDailyEntry from '../hooks/useUserDailyEntry';
 import {
   MoodEnum,
   PainLocationEnum,
@@ -94,18 +91,6 @@ export type PainScaleValues = z.infer<typeof painScaleSchema>;
 function PainScale() {
   const user = useAuth();
 
-  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
-    useUserDailyEntries('pain', user?.uid || '');
-
-  const [editToday, setEditToday] = useState(false);
-
-  const [historical, setHistorical] = useState<FormEntry>();
-
-  const onViewHistorical = (entry: FormEntry) => {
-    setHistorical(entry);
-    form.reset(entry.form as PainScaleValues);
-  };
-
   const form = useForm<PainScaleValues>({
     resolver: zodResolver(painScaleSchema),
     defaultValues: {
@@ -121,11 +106,13 @@ function PainScale() {
     },
   });
 
+  const {data, isLoading, isToday} = useUserDailyEntry('pain', user?.uid || '');
+
   useEffect(() => {
-    if (todayEntry?.form) {
-      form.reset(todayEntry?.form as PainScaleValues);
+    if (data?.form) {
+      form.reset(data?.form as PainScaleValues);
     }
-  }, [todayEntry?.form, form]);
+  }, [data?.form, form]);
 
   const {watch, handleSubmit, control} = form;
   const painWorsenedBy = watch('painWorsenedBy');
@@ -135,11 +122,6 @@ function PainScale() {
 
   const {loading, submitForm} = useSubmitTrackingForm('pain', user?.uid || '');
 
-  const onSubmit = (values: PainScaleValues) => {
-    submitForm(values);
-    setEditToday(false);
-  };
-
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -148,25 +130,13 @@ function PainScale() {
     );
   }
 
-  if (hasTodayEntry && !editToday && !historical) {
-    return (
-      <>
-        <SubmissionSuccess type="pain" onEdit={() => setEditToday(true)} />
-        <DailyEntryList
-          entries={historicEntries}
-          onViewHistorical={onViewHistorical}
-        />
-      </>
-    );
-  }
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl font-bold mb-2">Daily Pain Check-In</h2>
-        {!!historical && (
+        {!isToday && (
           <h2 className="text-2xl font-bold mb-2">
-            {dayjs(historical.updatedAt).format('MMM D, YYYY')}
+            {dayjs(data?.updatedAt).format('MMM D, YYYY')}
           </h2>
         )}
       </div>
@@ -177,7 +147,7 @@ function PainScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(submitForm)} className="space-y-6">
           {/** Question 1 */}
           <Card>
             <CardHeader>
@@ -195,7 +165,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
-                            disabled={!!historical}
+                            disabled={!isToday}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -227,7 +197,7 @@ function PainScale() {
                 render={({field}) => (
                   <FormItem>
                     <Slider
-                      disabled={!!historical}
+                      disabled={!isToday}
                       min={0}
                       max={10}
                       step={1}
@@ -258,7 +228,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
-                            disabled={!!historical}
+                            disabled={!isToday}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -295,7 +265,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
-                            disabled={!!historical}
+                            disabled={!isToday}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -315,7 +285,7 @@ function PainScale() {
                         render={({field}) => (
                           <FormItem className="mt-2">
                             <Input
-                              disabled={!!historical}
+                              disabled={!isToday}
                               placeholder="Please specify..."
                               {...field}
                             />
@@ -348,7 +318,7 @@ function PainScale() {
                           key={opt.value}
                           className="flex items-center space-x-2">
                           <Checkbox
-                            disabled={!!historical}
+                            disabled={!isToday}
                             checked={field.value?.includes(opt.value)}
                             onCheckedChange={checked => {
                               const newVal = checked
@@ -368,7 +338,7 @@ function PainScale() {
                         render={({field}) => (
                           <FormItem className="mt-2">
                             <Input
-                              disabled={!!historical}
+                              disabled={!isToday}
                               placeholder="Please specify..."
                               {...field}
                             />
@@ -400,7 +370,7 @@ function PainScale() {
                     <RadioGroup
                       onValueChange={field.onChange}
                       value={field.value}
-                      disabled={!!historical}
+                      disabled={!isToday}
                       className="flex flex-col space-y-1">
                       {moodOptions.map(opt => (
                         <div
@@ -428,7 +398,7 @@ function PainScale() {
                 render={({field}) => (
                   <FormItem>
                     <Textarea
-                      disabled={!!historical}
+                      disabled={!isToday}
                       placeholder="Add a note..."
                       {...field}
                     />
@@ -453,7 +423,7 @@ function PainScale() {
                 render={({field}) => (
                   <FormItem>
                     <Input
-                      disabled={!!historical}
+                      disabled={!isToday}
                       placeholder="I was able to..."
                       {...field}
                     />
@@ -465,27 +435,12 @@ function PainScale() {
           </Card>
 
           <div className="pt-4 flex justify-center">
-            {editToday && (
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full sm:w-auto mr-5"
-                onClick={() => setEditToday(false)}>
-                Back
-              </Button>
-            )}
-            {!historical ? (
-              <Button type="submit" className="w-full sm:w-auto">
-                Submit
-              </Button>
-            ) : (
-              <Button
-                onClick={() => setHistorical(undefined)}
-                type="button"
-                className="w-full sm:w-auto">
-                Back
-              </Button>
-            )}
+            <Button
+              disabled={!isToday}
+              type="submit"
+              className="w-full sm:w-auto">
+              Submit
+            </Button>
           </div>
         </form>
       </Form>

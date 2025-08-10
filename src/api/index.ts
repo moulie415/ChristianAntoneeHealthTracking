@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {collection, getDocs, orderBy, query, where} from 'firebase/firestore';
+import {collection, doc, getDoc, getDocs, orderBy, query, where} from 'firebase/firestore';
 import {httpsCallable} from 'firebase/functions';
 import {db, functions} from '../App';
 import type {HabitFormValues} from '../pages/DailyHabitBuilder';
@@ -33,10 +33,13 @@ export interface FormEntry {
 }
 
 export const getDailyEntries = async (
-  type: FormType,
+  type: FormType | null,
   uid: string,
   timeSpan: TimeSpan = 'weekly',
 ) => {
+  if (!type) {
+    throw new Error('Invalid type')
+  }
   let date = dayjs().subtract(1, 'week').toDate();
 
   if (timeSpan === 'weekly') {
@@ -56,4 +59,19 @@ export const getDailyEntries = async (
   const snapshot = await getDocs(q);
 
   return snapshot.docs;
+};
+
+
+
+export const getDailyEntry = async (
+  type: FormType,
+  uid: string,
+  day: string
+) => {
+  const dailyEntryRef = doc(db, 'users', uid, 'dailyEntries', `${type}_${dayjs(day).format('YYYYMMDD')}`);
+  const docSnap = await getDoc(dailyEntryRef);
+  if (!docSnap.exists()) {
+    throw Error("Couldn't find entry for that date")
+  }
+  return docSnap;
 };

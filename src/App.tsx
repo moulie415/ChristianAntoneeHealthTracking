@@ -13,6 +13,8 @@ import {RequireAuth} from './components/RequireAuth';
 import {AuthProvider} from './context/AuthContext';
 import {firebaseConfig} from './FIREBASE_CONFIG';
 import {DailyHabitBuilder} from './pages/DailyHabitBuilder';
+import ErrorPage from './pages/ErrorPage';
+import FormHistory from './pages/FormHistory';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import PainScale from './pages/PainScale';
@@ -24,6 +26,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Layout />,
+    errorElement: <ErrorPage />,
     children: [
       {
         index: true,
@@ -76,6 +79,18 @@ const router = createBrowserRouter([
             <DailyHabitBuilder />
           </RequireAuth>
         ),
+      },
+      {
+        path: 'history',
+        element: (
+          <RequireAuth>
+            <FormHistory />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: '*',
+        element: <ErrorPage />,
       },
     ],
   },

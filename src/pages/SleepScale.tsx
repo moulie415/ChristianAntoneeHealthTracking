@@ -12,18 +12,15 @@ import {Input} from '@/components/ui/input';
 import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {zodResolver} from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-import type {FormEntry} from '../api';
-import DailyEntryList from '../components/FormHistory';
-import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Card, CardContent, CardHeader} from '../components/ui/card';
 import {Label} from '../components/ui/label';
 import {Spinner} from '../components/ui/spinner';
 import {useAuth} from '../context/AuthContext';
 import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
-import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
+import useUserDailyEntry from '../hooks/useUserDailyEntry';
 import {
   DisruptionEnum,
   HelperEnum,
@@ -215,17 +212,10 @@ export const allSleepOptions = [
 function SleepScale() {
   const user = useAuth();
 
-  const [editToday, setEditToday] = useState(false);
-
-  const [historical, setHistorical] = useState<FormEntry>();
-
-  const onViewHistorical = (entry: FormEntry) => {
-    setHistorical(entry);
-    form.reset(entry.form as SleepFormValues);
-  };
-
-  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
-    useUserDailyEntries('sleep', user?.uid || '');
+  const {data, isLoading, isToday} = useUserDailyEntry(
+    'sleep',
+    user?.uid || '',
+  );
 
   const form = useForm<SleepFormValues>({
     resolver: zodResolver(sleepScaleSchema),
@@ -237,17 +227,12 @@ function SleepScale() {
   });
 
   useEffect(() => {
-    if (todayEntry?.form) {
-      form.reset(todayEntry?.form as SleepFormValues);
+    if (data?.form) {
+      form.reset(data?.form as SleepFormValues);
     }
-  }, [todayEntry?.form, form]);
+  }, [data?.form, form]);
 
   const {loading, submitForm} = useSubmitTrackingForm('sleep', user?.uid || '');
-
-  const onSubmit = (values: SleepFormValues) => {
-    submitForm(values);
-    setEditToday(false);
-  };
 
   if (loading || isLoading) {
     return (
@@ -257,25 +242,13 @@ function SleepScale() {
     );
   }
 
-  if (hasTodayEntry && !editToday && !historical) {
-    return (
-      <>
-        <SubmissionSuccess type="sleep" onEdit={() => setEditToday(true)} />
-        <DailyEntryList
-          entries={historicEntries}
-          onViewHistorical={onViewHistorical}
-        />
-      </>
-    );
-  }
-
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="flex flex-row justify-between">
         <h2 className="text-2xl font-bold mb-2">Daily Sleep Check-In</h2>
-        {!!historical && (
+        {!isToday && (
           <h2 className="text-2xl font-bold mb-2">
-            {dayjs(historical.updatedAt).format('MMM D, YYYY')}
+            {dayjs(data?.updatedAt).format('MMM D, YYYY')}
           </h2>
         )}
       </div>
@@ -285,7 +258,7 @@ function SleepScale() {
       </p>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
           {/* Question 1 */}
           <Card>
             <CardHeader>
@@ -299,7 +272,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        disabled={!!historical}
+                        disabled={!isToday}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -341,7 +314,7 @@ function SleepScale() {
                               className="flex flex-row items-start space-y-1">
                               <FormControl>
                                 <Checkbox
-                                  disabled={!!historical}
+                                  disabled={!isToday}
                                   checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
                                     return checked
@@ -375,7 +348,7 @@ function SleepScale() {
                             <FormLabel>Other disruption</FormLabel>
                             <FormControl>
                               <Input
-                                disabled={!!historical}
+                                disabled={!isToday}
                                 placeholder="Describe..."
                                 {...field}
                               />
@@ -413,7 +386,7 @@ function SleepScale() {
                               className="flex flex-row items-start space-y-1">
                               <FormControl>
                                 <Checkbox
-                                  disabled={!!historical}
+                                  disabled={!isToday}
                                   checked={field.value?.includes(value)}
                                   onCheckedChange={checked => {
                                     return checked
@@ -447,7 +420,7 @@ function SleepScale() {
                             <FormLabel>Other helper</FormLabel>
                             <FormControl>
                               <Input
-                                disabled={!!historical}
+                                disabled={!isToday}
                                 placeholder="Describe..."
                                 {...field}
                               />
@@ -475,7 +448,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        disabled={!!historical}
+                        disabled={!isToday}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="flex flex-col space-y-1">
@@ -507,7 +480,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        disabled={!!historical}
+                        disabled={!isToday}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -541,7 +514,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        disabled={!!historical}
+                        disabled={!isToday}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -575,7 +548,7 @@ function SleepScale() {
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        disabled={!!historical}
+                        disabled={!isToday}
                         onValueChange={field.onChange}
                         value={field.value}
                         className="space-y-2">
@@ -594,27 +567,12 @@ function SleepScale() {
             </CardContent>
           </Card>
           <div className="pt-4 flex justify-center">
-            {editToday && (
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full sm:w-auto mr-5"
-                onClick={() => setEditToday(false)}>
-                Back
-              </Button>
-            )}
-            {!historical ? (
-              <Button type="submit" className="w-full sm:w-auto">
-                Submit
-              </Button>
-            ) : (
-              <Button
-                onClick={() => setHistorical(undefined)}
-                type="button"
-                className="w-full sm:w-auto">
-                Back
-              </Button>
-            )}
+            <Button
+              disabled={!isToday}
+              type="submit"
+              className="w-full sm:w-auto">
+              Submit
+            </Button>
           </div>
         </form>
       </Form>

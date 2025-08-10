@@ -1,14 +1,28 @@
 import {Card, CardContent} from '@/components/ui/card';
 import dayjs from 'dayjs';
+import {useNavigate} from 'react-router';
 import type {FormEntry} from '../api';
 import {Button} from './ui/button';
 
 interface Props {
   entries: FormEntry[];
-  onViewHistorical: (entry: FormEntry) => void;
 }
 
-export default function DailyEntryList({entries, onViewHistorical}: Props) {
+export default function DailyEntryList({entries}: Props) {
+  const navigate = useNavigate();
+
+  const getNavigationMapping = (entry: FormEntry) => {
+    switch (entry.type) {
+      case 'habit':
+        return `/daily-habit-builder?date=${entry.dateKey}`;
+      case 'pain':
+        return `/pain-scale?date=${entry.dateKey}`;
+      case 'sleep':
+        return `/sleep-scale?date=${entry.dateKey}`;
+      case 'stress':
+        return `/stress-scale?date=${entry.dateKey}`;
+    }
+  };
   return (
     <div className="space-y-4 px-4 sm:px-0">
       {entries.map(entry => (
@@ -26,7 +40,9 @@ export default function DailyEntryList({entries, onViewHistorical}: Props) {
                   {dayjs(entry.updatedAt).format('MMM D, YYYY')}
                 </p>
               </div>
-              <Button onClick={() => onViewHistorical(entry)}>View</Button>
+              <Button onClick={() => navigate(getNavigationMapping(entry))}>
+                View
+              </Button>
             </div>
           </CardContent>
         </Card>

@@ -8,7 +8,7 @@ import {
 } from '../api';
 
 export const useUserDailyEntries = (
-  type: FormType,
+  type: FormType | null,
   uid: string,
   timeSpan: TimeSpan = 'weekly',
 ) => {

@@ -12,16 +12,13 @@ import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group';
 import {Textarea} from '@/components/ui/textarea';
 import {zodResolver} from '@hookform/resolvers/zod';
 import dayjs from 'dayjs';
-import {useEffect, useState} from 'react';
+import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {z} from 'zod';
-import type {FormEntry} from '../api';
-import DailyEntryList from '../components/FormHistory';
-import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Spinner} from '../components/ui/spinner';
 import {useAuth} from '../context/AuthContext';
 import useSubmitTrackingForm from '../hooks/useSubmitTrackingForm';
-import {useUserDailyEntries} from '../hooks/useUserDailyEntries';
+import useUserDailyEntry from '../hooks/useUserDailyEntry';
 import {habitSchema} from '../schemas/habitBuilder';
 
 export type HabitFormValues = z.infer<typeof habitSchema>;
@@ -41,47 +38,24 @@ export function DailyHabitBuilder() {
 
   const user = useAuth();
 
-  const [editToday, setEditToday] = useState(false);
-  const [historical, setHistorical] = useState<FormEntry>();
-
   const {loading, submitForm} = useSubmitTrackingForm('habit', user?.uid || '');
 
-  const onViewHistorical = (entry: FormEntry) => {
-    setHistorical(entry);
-    form.reset(entry.form as HabitFormValues);
-  };
-
-  const {isLoading, todayEntry, hasTodayEntry, historicEntries} =
-    useUserDailyEntries('habit', user?.uid || '');
+  const {data, isLoading, isToday} = useUserDailyEntry(
+    'habit',
+    user?.uid || '',
+  );
 
   useEffect(() => {
-    if (todayEntry?.form) {
-      form.reset(todayEntry?.form as HabitFormValues);
+    if (data?.form) {
+      form.reset(data?.form as HabitFormValues);
     }
-  }, [todayEntry?.form, form]);
-
-  const onSubmit = (values: HabitFormValues) => {
-    submitForm(values);
-    setEditToday(false);
-  };
+  }, [data?.form, form]);
 
   if (loading || isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Spinner size="large" />
       </div>
-    );
-  }
-
-  if (hasTodayEntry && !editToday && !historical) {
-    return (
-      <>
-        <SubmissionSuccess type="habit" onEdit={() => setEditToday(true)} />
-        <DailyEntryList
-          entries={historicEntries}
-          onViewHistorical={onViewHistorical}
-        />
-      </>
     );
   }
 
@@ -116,7 +90,7 @@ export function DailyHabitBuilder() {
                 <FormLabel className="font-semibold">{title}</FormLabel>
                 <FormControl>
                   <RadioGroup
-                    disabled={!!historical}
+                    disabled={!isToday}
                     onValueChange={val => {
                       // Convert string back to proper type
                       if (val === 'true') {
@@ -160,7 +134,7 @@ export function DailyHabitBuilder() {
 
         <FormField
           control={form.control}
-          disabled={!!historical}
+          disabled={!isToday}
           name={noteName as any}
           render={({field}) => (
             <FormItem>
@@ -187,9 +161,9 @@ export function DailyHabitBuilder() {
         <h2 className="text-2xl font-bold mb-2">
           Daily Habit Builder for Back Pain Recovery
         </h2>
-        {!!historical && (
+        {!isToday && (
           <h2 className="text-2xl font-bold mb-2">
-            {dayjs(historical.updatedAt).format('MMM D, YYYY')}
+            {dayjs(data?.updatedAt).format('MMM D, YYYY')}
           </h2>
         )}
       </div>
@@ -199,7 +173,7 @@ export function DailyHabitBuilder() {
         better.
       </p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(submitForm)} className="space-y-6">
           <DailyHabitSection
             title="🧘‍♂️ 1. Mobility Routine"
             name="mobilityRoutine"
@@ -244,27 +218,12 @@ export function DailyHabitBuilder() {
           />
 
           <div className="pt-4 flex justify-center">
-            {editToday && (
-              <Button
-                type="button"
-                variant="secondary"
-                className="w-full sm:w-auto mr-5"
-                onClick={() => setEditToday(false)}>
-                Back
-              </Button>
-            )}
-            {!historical ? (
-              <Button type="submit" className="w-full sm:w-auto">
-                Submit
-              </Button>
-            ) : (
-              <Button
-                onClick={() => setHistorical(undefined)}
-                type="button"
-                className="w-full sm:w-auto">
-                Back
-              </Button>
-            )}
+            <Button
+              disabled={!isToday}
+              type="submit"
+              className="w-full sm:w-auto">
+              Submit
+            </Button>
           </div>
         </form>
       </Form>
