@@ -1,7 +1,8 @@
 import {Card, CardContent} from '@/components/ui/card';
 import dayjs from 'dayjs';
-import {useNavigate} from 'react-router';
+import {useNavigate, useSearchParams} from 'react-router';
 import type {FormEntry} from '../api';
+import {getTypeUrlMapping} from '../helpers/getTypeUrlMapping';
 import {Button} from './ui/button';
 
 interface Props {
@@ -11,18 +12,10 @@ interface Props {
 export default function DailyEntryList({entries}: Props) {
   const navigate = useNavigate();
 
-  const getNavigationMapping = (entry: FormEntry) => {
-    switch (entry.type) {
-      case 'habit':
-        return `/daily-habit-builder?date=${entry.dateKey}`;
-      case 'pain':
-        return `/pain-scale?date=${entry.dateKey}`;
-      case 'sleep':
-        return `/sleep-scale?date=${entry.dateKey}`;
-      case 'stress':
-        return `/stress-scale?date=${entry.dateKey}`;
-    }
-  };
+  const [searchParams] = useSearchParams();
+
+  const uid = searchParams.get('uid');
+
   return (
     <div className="space-y-4 px-4 sm:px-0">
       {entries.map(entry => (
@@ -40,7 +33,12 @@ export default function DailyEntryList({entries}: Props) {
                   {dayjs(entry.updatedAt).format('MMM D, YYYY')}
                 </p>
               </div>
-              <Button onClick={() => navigate(getNavigationMapping(entry))}>
+              <Button
+                onClick={() =>
+                  navigate(
+                    `${getTypeUrlMapping(entry.type)}?date=${entry.dateKey}${uid ? '&uid=' + uid : ''}`,
+                  )
+                }>
                 View
               </Button>
             </div>

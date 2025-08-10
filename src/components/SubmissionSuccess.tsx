@@ -1,7 +1,7 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader} from '@/components/ui/card';
 import {CheckCircle} from 'lucide-react';
-import {useNavigate} from 'react-router';
+import {useNavigate, useSearchParams} from 'react-router';
 import type {FormType} from '../api';
 import {getTypeUrlMapping} from '../helpers/getTypeUrlMapping';
 
@@ -11,6 +11,10 @@ type SubmissionSuccessProps = {
 
 export function SubmissionSuccess({type}: SubmissionSuccessProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const uid = searchParams.get('uid');
+
   return (
     <div className="px-4 sm:px-0">
       <Card className="max-w-xl mx-auto mt-12 text-center shadow-lg">
@@ -25,7 +29,11 @@ export function SubmissionSuccess({type}: SubmissionSuccessProps) {
           </p>
           <div className="flex justify-center gap-4">
             <Button
-              onClick={() => navigate(getTypeUrlMapping(type))}
+              onClick={() =>
+                navigate(
+                  `${getTypeUrlMapping(type)}${uid ? '&uid=' + uid : ''}`,
+                )
+              }
               variant="outline">
               Edit Today’s Entry
             </Button>

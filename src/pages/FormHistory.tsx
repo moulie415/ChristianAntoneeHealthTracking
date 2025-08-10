@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import {useNavigate, useSearchParams} from 'react-router';
 import type {FormType} from '../api';
-import DailyEntryList from '../components/FormHistory';
+import DailyEntryList from '../components/DailyEntryList';
 import {SubmissionSuccess} from '../components/SubmissionSuccess';
 import {Spinner} from '../components/ui/spinner';
 import {useAuth} from '../context/AuthContext';
@@ -16,10 +16,11 @@ const FormHistory = () => {
 
   const type = searchParams.get('type');
   const success = searchParams.get('success');
+  const uid = searchParams.get('uid');
 
   const {isLoading, historicEntries} = useUserDailyEntries(
     type as FormType | null,
-    user?.uid || '',
+    uid || user?.uid || '',
   );
 
   useEffect(() => {

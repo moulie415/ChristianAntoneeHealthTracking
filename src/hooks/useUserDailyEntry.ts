@@ -15,15 +15,18 @@ const useUserDailyEntry = (
   const [searchParams] = useSearchParams();
 
   const date = searchParams.get('date')
+  const  paramUid = searchParams.get('uid')
 
+
+  const userId = paramUid || uid
 
   const normalizedDate = date
     ? dayjs(date).format('YYYYMMDD')
     : dayjs().format('YYYYMMDD');
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['dailyEntry', type, uid, normalizedDate],
-    queryFn: () => getDailyEntry(type, uid, normalizedDate),
+    queryKey: ['dailyEntry', type, userId, normalizedDate],
+    queryFn: () => getDailyEntry(type, userId, normalizedDate),
     staleTime: 1000 * 60 * 60 * 24,
     select: doc => {
       if (!doc.exists()) return undefined;
