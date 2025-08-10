@@ -1,11 +1,6 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
-import {
-  LucideBrain,
-  LucideClipboardCheck,
-  LucideHeart,
-  LucideMoon,
-} from 'lucide-react';
+import {LucideHeart} from 'lucide-react';
 import {Link} from 'react-router';
 
 const pages = [
@@ -15,24 +10,24 @@ const pages = [
     link: '/pain-scale',
     description: 'Track your daily pain levels to monitor recovery.',
   },
-  {
-    title: 'Daily Sleep Check-In',
-    icon: <LucideMoon className="text-indigo-500" size={32} />,
-    link: '/sleep-scale',
-    description: 'Reflect on your sleep quality and patterns.',
-  },
-  {
-    title: 'Daily Stress Check-In',
-    icon: <LucideBrain className="text-yellow-500" size={32} />,
-    link: '/stress-scale',
-    description: 'Monitor stress and mental wellbeing daily.',
-  },
-  {
-    title: 'Daily Habit Builder',
-    icon: <LucideClipboardCheck className="text-emerald-500" size={32} />,
-    link: '/daily-habit-builder',
-    description: 'Build consistent habits to support back recovery.',
-  },
+  // {
+  //   title: 'Daily Sleep Check-In',
+  //   icon: <LucideMoon className="text-indigo-500" size={32} />,
+  //   link: '/sleep-scale',
+  //   description: 'Reflect on your sleep quality and patterns.',
+  // },
+  // {
+  //   title: 'Daily Stress Check-In',
+  //   icon: <LucideBrain className="text-yellow-500" size={32} />,
+  //   link: '/stress-scale',
+  //   description: 'Monitor stress and mental wellbeing daily.',
+  // },
+  // {
+  //   title: 'Daily Habit Builder',
+  //   icon: <LucideClipboardCheck className="text-emerald-500" size={32} />,
+  //   link: '/daily-habit-builder',
+  //   description: 'Build consistent habits to support back recovery.',
+  // },
 ];
 
 export default function Home() {

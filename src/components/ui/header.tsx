@@ -1,10 +1,9 @@
 import {Button} from '@/components/ui/button';
 import {signOut} from 'firebase/auth';
-import {LogIn, LogOut} from 'lucide-react';
+import {Home, LogIn, LogOut} from 'lucide-react';
 import React, {useEffect, useState} from 'react';
 import {Link, useNavigate} from 'react-router';
 import {auth} from '../../App';
-import logo from '../../assets/logo.png';
 import {useAuth} from '../../context/AuthContext';
 import {
   Dialog,
@@ -39,7 +38,10 @@ const Header: React.FC = () => {
     <header className="w-full px-4 py-3 bg-white shadow-md flex justify-between items-center">
       {/* <h1 className="text-xl font-bold">🚀 My App</h1> */}
       <Link to="/">
-        <img src={logo} width={40} className="" />
+        <Button variant="outline" size="icon">
+          <Home />
+          <span className="sr-only">Home</span>
+        </Button>
       </Link>
       {isLoggedIn ? (
         <>
