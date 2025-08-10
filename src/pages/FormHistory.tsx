@@ -42,7 +42,7 @@ const FormHistory = () => {
 
   return (
     <>
-      {!!success && <SubmissionSuccess type="habit" />}
+      {!!success && <SubmissionSuccess type={type as FormType} />}
       <DailyEntryList entries={historicEntries} />
     </>
   );
